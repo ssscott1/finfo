@@ -1,0 +1,2682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finfo — Financial information, not advice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+/* ─── DESIGN TOKENS ───────────────────────────────────────────── */
+:root {
+  --white:       #ffffff;
+  --bg:          #F5F7F5;
+  --bg-card:     #ffffff;
+  --green-900:   #0A2E1A;
+  --green-800:   #0E3D24;
+  --green-700:   #16512F;
+  --green-600:   #1A6639;
+  --green-500:   #22814A;
+  --green-400:   #2E9E5B;
+  --green-100:   #E6F4EC;
+  --green-50:    #F0FAF4;
+  --accent:      #00C16A;
+  --accent-dark: #009A53;
+  --gold:        #D4930A;
+  --gold-bg:     #FFF8E6;
+  --gold-border: #F5D485;
+  --red-soft:    #FFF1F0;
+  --red-text:    #C0392B;
+  --text-primary:   #111827;
+  --text-secondary: #4B5563;
+  --text-muted:     #9CA3AF;
+  --border:      #E5E7EB;
+  --border-mid:  #D1D5DB;
+  --shadow-sm:   0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:   0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,.10), 0 2px 8px rgba(0,0,0,.05);
+  --radius-sm:   8px;
+  --radius:      12px;
+  --radius-lg:   18px;
+  --radius-xl:   24px;
+  --transition:  all .2s cubic-bezier(.4,0,.2,1);
+}
+
+/* ─── RESET ────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; max-width: 100%; }
+a { color: var(--green-600); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font-family: inherit; cursor: pointer; }
+input { font-family: inherit; }
+
+/* ─── TYPOGRAPHY ────────────────────────────────────────────────── */
+h1, h2, h3, h4 {
+  font-family: 'Syne', sans-serif;
+  line-height: 1.15;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+h1 { font-size: clamp(2rem, 5vw, 3.25rem); }
+h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); }
+h3 { font-size: clamp(1.15rem, 2vw, 1.5rem); }
+h4 { font-size: 1.05rem; }
+p  { color: var(--text-secondary); line-height: 1.75; }
+
+/* ─── LAYOUT HELPERS ───────────────────────────────────────────── */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.section    { padding: 72px 0; }
+.section-sm { padding: 48px 0; }
+
+/* ─── PAGES ─────────────────────────────────────────────────────── */
+.page { display: none; }
+.page.active { display: block; animation: fadeIn .24s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ════════════════════════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════════════════════ */
+.site-header {
+  position: sticky; top: 0; z-index: 1000;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 32px;
+  height: 68px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Logo */
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-mark {
+  width: 38px; height: 38px;
+  background: var(--green-800);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-mark svg { width: 22px; height: 22px; }
+.logo-wordmark {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--green-900);
+  letter-spacing: -.5px;
+}
+.logo-wordmark span { color: var(--green-500); }
+
+/* Main nav */
+.main-nav { display: flex; align-items: center; gap: 2px; }
+.nav-link {
+  padding: 6px 13px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: none; border: none;
+  white-space: nowrap;
+  transition: var(--transition);
+}
+.nav-link:hover, .nav-link.active {
+  background: var(--green-50);
+  color: var(--green-700);
+}
+
+/* Search */
+.header-search { display: flex; align-items: center; gap: 10px; }
+.search-wrap {
+  display: flex; align-items: center;
+  border: 1.5px solid var(--border-mid);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--white);
+  transition: var(--transition);
+}
+.search-wrap:focus-within {
+  border-color: var(--green-500);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(34,129,74,.1);
+}
+.search-wrap input {
+  border: none; background: transparent;
+  padding: 8px 12px; font-size: 13.5px;
+  color: var(--text-primary); width: 200px; outline: none;
+}
+.search-wrap input::placeholder { color: var(--text-muted); }
+.search-btn-icon {
+  background: none; border: none;
+  padding: 8px 12px; color: var(--text-muted);
+  display: flex; align-items: center;
+  transition: var(--transition);
+}
+.search-btn-icon:hover { color: var(--green-600); }
+
+/* Mobile toggle */
+.mob-toggle {
+  display: none; background: none; border: none;
+  padding: 6px; color: var(--text-primary); font-size: 20px;
+}
+
+/* Mobile drawer */
+.mob-drawer {
+  display: none;
+  position: fixed; top: 68px; left: 0; right: 0; bottom: 0;
+  background: var(--white); z-index: 999;
+  padding: 16px; overflow-y: auto;
+  flex-direction: column; gap: 4px;
+  border-top: 1px solid var(--border);
+}
+.mob-drawer.open { display: flex; }
+.mob-drawer .nav-link {
+  padding: 12px 16px; font-size: 15px;
+  border-radius: var(--radius-sm); text-align: left; width: 100%;
+  display: flex; align-items: center; gap: 10px;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════════════════════════ */
+.hero {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 64px 0 56px;
+  position: relative; overflow: hidden;
+}
+.hero-bg-shape {
+  position: absolute; right: -100px; top: -80px;
+  width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle at 60% 40%, var(--green-50) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-bg-dots {
+  position: absolute; right: 40px; top: 40px;
+  width: 240px; height: 240px;
+  background-image: radial-gradient(var(--border-mid) 1.5px, transparent 1.5px);
+  background-size: 18px 18px;
+  opacity: .5; pointer-events: none;
+}
+.hero-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 24px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 64px; align-items: center;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--green-50); border: 1px solid var(--green-100);
+  color: var(--green-700); border-radius: 100px;
+  padding: 5px 13px; font-size: 12px; font-weight: 600;
+  letter-spacing: .3px; margin-bottom: 20px;
+}
+.hero-badge::before {
+  content: ''; width: 6px; height: 6px;
+  background: var(--accent); border-radius: 50%; flex-shrink: 0;
+}
+.hero h1 { margin-bottom: 18px; }
+.hero h1 em { font-style: italic; color: var(--green-600); }
+.hero-sub {
+  font-size: 1.05rem; color: var(--text-secondary);
+  margin-bottom: 32px; max-width: 480px; line-height: 1.8;
+}
+.hero-search {
+  display: flex; align-items: center;
+  border: 2px solid var(--border-mid);
+  border-radius: 10px; background: var(--white);
+  box-shadow: var(--shadow-md);
+  overflow: hidden; transition: var(--transition);
+  max-width: 480px;
+}
+.hero-search:focus-within {
+  border-color: var(--green-500);
+  box-shadow: 0 0 0 4px rgba(34,129,74,.1), var(--shadow-md);
+}
+.hero-search input {
+  flex: 1; border: none; background: transparent;
+  padding: 14px 18px; font-size: 14.5px;
+  color: var(--text-primary); outline: none;
+}
+.hero-search input::placeholder { color: var(--text-muted); }
+.hero-search-btn {
+  background: var(--green-800); color: var(--white);
+  border: none; padding: 14px 22px;
+  font-size: 14px; font-weight: 600;
+  transition: var(--transition); white-space: nowrap;
+}
+.hero-search-btn:hover { background: var(--green-700); }
+.hero-quick {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px;
+}
+.hero-quick-btn {
+  border: 1.5px solid var(--border-mid);
+  background: var(--white); border-radius: 100px;
+  padding: 5px 13px; font-size: 12.5px; font-weight: 500;
+  color: var(--text-secondary); transition: var(--transition);
+}
+.hero-quick-btn:hover {
+  border-color: var(--green-500); color: var(--green-700);
+  background: var(--green-50);
+}
+
+/* Hero categories grid (right side) */
+.hero-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.hero-cat {
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 18px 16px;
+  cursor: pointer; transition: var(--transition);
+  display: flex; align-items: center; gap: 12px;
+}
+.hero-cat:hover {
+  background: var(--white); border-color: var(--green-400);
+  box-shadow: var(--shadow-md); transform: translateY(-2px);
+}
+.hero-cat-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.hero-cat-label { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.hero-cat-desc  { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+
+/* ─── TRUST BAR ─────────────────────────────────────────────────── */
+.trust-bar {
+  background: var(--green-900); color: var(--white);
+  padding: 0;
+}
+.trust-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 24px;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  divide: horizontal;
+}
+.trust-item {
+  padding: 22px 24px;
+  border-right: 1px solid rgba(255,255,255,.08);
+  display: flex; align-items: center; gap: 14px;
+}
+.trust-item:last-child { border-right: none; }
+.trust-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: rgba(255,255,255,.07);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.trust-text strong {
+  display: block; font-size: 13px; font-weight: 600; color: var(--white);
+}
+.trust-text span { font-size: 11.5px; color: rgba(255,255,255,.5); }
+
+/* ─── SECTION HEADER ────────────────────────────────────────────── */
+.section-header { margin-bottom: 36px; }
+.section-eyebrow {
+  font-size: 11.5px; font-weight: 700; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--green-600);
+  margin-bottom: 8px; display: block;
+}
+.section-header h2 { margin-bottom: 10px; }
+.section-header p { color: var(--text-secondary); max-width: 560px; }
+
+/* ─── FEATURED CTA BAND ──────────────────────────────────────────── */
+.cta-band {
+  background: linear-gradient(135deg, var(--green-800) 0%, var(--green-900) 100%);
+  position: relative; overflow: hidden;
+  padding: 60px 0;
+}
+.cta-band-pattern {
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle at 80% 50%, rgba(0,193,106,.12) 0%, transparent 50%),
+    radial-gradient(circle at 20% 80%, rgba(255,255,255,.03) 0%, transparent 40%);
+  pointer-events: none;
+}
+.cta-band-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 24px;
+  display: grid; grid-template-columns: 1fr auto;
+  align-items: center; gap: 48px;
+}
+.cta-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--accent);
+  margin-bottom: 12px; display: block;
+}
+.cta-band h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  color: var(--white); margin-bottom: 12px;
+}
+.cta-band p { color: rgba(255,255,255,.65); max-width: 480px; }
+.cta-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+
+/* ─── BUTTONS ───────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 24px; border-radius: 8px;
+  font-size: 14px; font-weight: 600;
+  border: none; cursor: pointer;
+  transition: var(--transition); text-decoration: none;
+}
+.btn-primary {
+  background: var(--accent); color: var(--green-900);
+}
+.btn-primary:hover { background: #00da76; transform: translateY(-1px); }
+.btn-white {
+  background: var(--white); color: var(--green-800);
+}
+.btn-white:hover { background: var(--green-50); }
+.btn-ghost {
+  background: rgba(255,255,255,.1); color: var(--white);
+  border: 1px solid rgba(255,255,255,.2);
+}
+.btn-ghost:hover { background: rgba(255,255,255,.18); }
+.btn-outline {
+  background: transparent; color: var(--green-700);
+  border: 2px solid var(--green-500);
+}
+.btn-outline:hover { background: var(--green-50); }
+.btn-sm { padding: 8px 16px; font-size: 13px; }
+
+/* ─── CALCULATOR CAROUSEL ────────────────────────────────────────── */
+.calc-section { background: var(--white); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.carousel-wrap { position: relative; }
+.carousel-track {
+  display: flex; gap: 16px;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  padding: 4px 4px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-mid) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+.carousel-track::-webkit-scrollbar { height: 4px; }
+.carousel-track::-webkit-scrollbar-track { background: transparent; }
+.carousel-track::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 2px; }
+
+.calc-card {
+  flex: 0 0 340px; scroll-snap-align: start;
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden; transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+.calc-card:hover { border-color: var(--green-400); box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+.calc-card-header {
+  padding: 22px 22px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.calc-card-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.calc-card-header h4 { font-size: .95rem; margin-bottom: 3px; }
+.calc-card-header p  { font-size: 12px; line-height: 1.5; color: var(--text-muted); margin: 0; }
+.calc-card-body { padding: 18px 22px 22px; }
+.calc-input-row { margin-bottom: 14px; }
+.calc-input-row label {
+  display: flex; justify-content: space-between;
+  font-size: 12px; font-weight: 600; color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.calc-input-row label .val { color: var(--green-600); }
+.calc-input-row input[type="range"] {
+  width: 100%; -webkit-appearance: none;
+  height: 4px; border-radius: 2px;
+  background: var(--border); outline: none; cursor: pointer;
+}
+.calc-input-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px;
+  border-radius: 50%; background: var(--green-800);
+  border: 2px solid var(--white); box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  cursor: pointer;
+}
+.calc-result {
+  background: var(--green-900); border-radius: 10px;
+  padding: 16px; text-align: center; margin-top: 16px;
+}
+.calc-result .label { font-size: 11px; color: rgba(255,255,255,.5); margin-bottom: 4px; }
+.calc-result .value {
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem; color: var(--accent); line-height: 1; font-weight: 700;
+}
+.calc-result .sub { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 4px; }
+.carousel-nav {
+  display: flex; gap: 8px; justify-content: flex-end;
+  margin-top: 4px;
+}
+.carousel-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1.5px solid var(--border-mid); background: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--text-secondary);
+  cursor: pointer; transition: var(--transition);
+}
+.carousel-btn:hover { border-color: var(--green-500); color: var(--green-700); background: var(--green-50); }
+
+/* ─── POPULAR LINKS GRID ─────────────────────────────────────────── */
+.pop-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+}
+.pop-card {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 22px;
+  transition: var(--transition); cursor: pointer;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.pop-card:hover { border-color: var(--green-400); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.pop-card-top { display: flex; align-items: center; gap: 12px; }
+.pop-cat-icon {
+  width: 38px; height: 38px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center; font-size: 17px;
+}
+.pop-tag {
+  font-size: 11px; font-weight: 700; letter-spacing: .5px;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.pop-card h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.05rem; font-weight: 700; line-height: 1.35;
+  color: var(--text-primary);
+}
+.pop-card p { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin: 0; }
+.pop-arrow {
+  margin-top: auto; font-size: 12px; font-weight: 600;
+  color: var(--green-600); display: flex; align-items: center; gap: 5px;
+}
+
+/* ─── NEWSLETTER ─────────────────────────────────────────────────── */
+.newsletter {
+  background: var(--green-50);
+  border-top: 1px solid var(--green-100);
+  border-bottom: 1px solid var(--green-100);
+  padding: 60px 0;
+}
+.newsletter-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 24px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 64px; align-items: center;
+}
+.newsletter h2 { margin-bottom: 12px; }
+.newsletter p  { margin-bottom: 0; }
+.nl-form { display: flex; flex-direction: column; gap: 12px; }
+.nl-form-row { display: flex; gap: 10px; }
+.nl-form input[type="email"] {
+  flex: 1; border: 1.5px solid var(--border-mid);
+  border-radius: 8px; padding: 13px 16px;
+  font-size: 14px; color: var(--text-primary);
+  background: var(--white); outline: none;
+  transition: var(--transition);
+}
+.nl-form input[type="email"]:focus {
+  border-color: var(--green-500);
+  box-shadow: 0 0 0 3px rgba(34,129,74,.1);
+}
+.nl-form input[type="email"]::placeholder { color: var(--text-muted); }
+.nl-disclaimer { font-size: 11.5px; color: var(--text-muted); line-height: 1.6; }
+
+/* ─── INNER PAGE HEADER ──────────────────────────────────────────── */
+.page-banner {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 44px 0 36px;
+}
+.breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12.5px; color: var(--text-muted);
+  margin-bottom: 14px;
+}
+.breadcrumb span { cursor: pointer; transition: var(--transition); }
+.breadcrumb span:hover { color: var(--green-600); }
+.breadcrumb .sep { color: var(--border-mid); }
+.page-banner-inner { display: flex; align-items: center; gap: 18px; }
+.page-banner-icon {
+  width: 56px; height: 56px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; flex-shrink: 0;
+}
+.page-banner h1 { margin-bottom: 6px; }
+.page-banner p  { margin: 0; font-size: 1rem; }
+
+/* ─── INNER PAGE LAYOUT ──────────────────────────────────────────── */
+.page-body { padding: 48px 0 72px; }
+.two-col { display: grid; grid-template-columns: 1fr 320px; gap: 32px; align-items: start; }
+.sidebar { position: sticky; top: 88px; }
+
+/* ─── CARDS ──────────────────────────────────────────────────────── */
+.card {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg); padding: 30px;
+  margin-bottom: 20px;
+}
+.card h3 { margin-bottom: 14px; }
+.card p+p { margin-top: 12px; }
+.card ul  { padding-left: 20px; margin-top: 10px; }
+.card li  { color: var(--text-secondary); margin-bottom: 8px; font-size: 14.5px; line-height: 1.65; }
+
+/* ─── GAW — GENERAL ADVICE WARNING ──────────────────────────────── */
+.gaw {
+  background: var(--gold-bg); border: 1.5px solid var(--gold-border);
+  border-radius: var(--radius-sm); padding: 16px 20px; margin: 20px 0;
+}
+.gaw-label {
+  font-size: 11px; font-weight: 700; letter-spacing: .5px;
+  text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 6px;
+}
+.gaw p { font-size: 12.5px; color: #7A5500; line-height: 1.65; margin: 0; }
+
+/* ─── INFO ALERT ─────────────────────────────────────────────────── */
+.info-alert {
+  background: var(--green-50); border: 1.5px solid var(--green-100);
+  border-radius: var(--radius-sm); padding: 16px 20px; margin: 16px 0;
+}
+.info-alert strong { font-size: 12.5px; color: var(--green-700); display: block; margin-bottom: 5px; }
+.info-alert p { font-size: 12.5px; color: var(--green-800); margin: 0; line-height: 1.65; }
+
+/* ─── TIP ────────────────────────────────────────────────────────── */
+.tip {
+  background: var(--bg); border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 14px 18px; margin: 16px 0;
+}
+.tip strong { font-size: 12.5px; color: var(--green-700); display: block; margin-bottom: 5px; }
+.tip p { font-size: 12.5px; margin: 0; line-height: 1.65; }
+
+/* ─── ACCORDION ──────────────────────────────────────────────────── */
+.acc-item {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); margin-bottom: 8px; overflow: hidden;
+}
+.acc-trigger {
+  width: 100%; text-align: left;
+  padding: 16px 20px; background: var(--white);
+  border: none; display: flex; justify-content: space-between;
+  align-items: center; font-size: 14.5px; font-weight: 500;
+  color: var(--text-primary); cursor: pointer; gap: 12px;
+  transition: var(--transition);
+}
+.acc-trigger:hover { background: var(--bg); }
+.acc-trigger.open { background: var(--green-900); color: var(--white); }
+.acc-trigger .chevron { font-size: 13px; flex-shrink: 0; transition: transform .25s; }
+.acc-trigger.open .chevron { transform: rotate(180deg); }
+.acc-body {
+  display: none; padding: 22px 22px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+.acc-body.open { display: block; }
+.acc-body p   { font-size: 14px; line-height: 1.78; }
+.acc-body p+p { margin-top: 12px; }
+.acc-body ul  { padding-left: 18px; margin-top: 8px; }
+.acc-body li  { font-size: 14px; color: var(--text-secondary); margin-bottom: 6px; line-height: 1.65; }
+
+/* ─── TAB BAR ────────────────────────────────────────────────────── */
+.tab-bar {
+  display: flex; gap: 2px;
+  background: var(--bg); border-radius: 10px;
+  padding: 4px; margin-bottom: 24px;
+  width: fit-content; flex-wrap: wrap;
+}
+.tab-btn {
+  padding: 7px 16px; border-radius: 8px; border: none;
+  background: transparent; font-size: 13px; font-weight: 500;
+  color: var(--text-muted); cursor: pointer; transition: var(--transition);
+}
+.tab-btn.active { background: var(--white); color: var(--text-primary); box-shadow: var(--shadow-sm); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ─── TABLE ──────────────────────────────────────────────────────── */
+.tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 16px 0; }
+.tbl th {
+  text-align: left; padding: 11px 14px;
+  background: var(--green-900); color: var(--white);
+  font-weight: 600; font-size: 12.5px;
+}
+.tbl th:first-child { border-radius: 8px 0 0 0; }
+.tbl th:last-child  { border-radius: 0 8px 0 0; }
+.tbl td { padding: 11px 14px; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+.tbl tr:nth-child(even) td { background: var(--bg); }
+.tbl .pos { color: var(--green-600); font-weight: 500; }
+.tbl .neg { color: var(--red-text); font-weight: 500; }
+
+/* ─── SIDEBAR WIDGETS ────────────────────────────────────────────── */
+.sidebar-nav {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; margin-bottom: 16px;
+}
+.sidebar-nav-title {
+  padding: 12px 18px; font-size: 11px; font-weight: 700;
+  letter-spacing: .6px; text-transform: uppercase;
+  color: var(--text-muted); border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.sidebar-nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 18px; border-bottom: 1px solid var(--border);
+  font-size: 13.5px; color: var(--text-primary);
+  cursor: pointer; transition: var(--transition);
+}
+.sidebar-nav-item:last-child { border-bottom: none; }
+.sidebar-nav-item:hover { background: var(--green-50); color: var(--green-700); }
+.sidebar-nav-item .si { width: 26px; height: 26px; border-radius: 6px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+
+.sidebar-promo {
+  background: var(--green-900); border-radius: var(--radius);
+  padding: 22px; margin-bottom: 16px; position: relative; overflow: hidden;
+}
+.sidebar-promo::before {
+  content: ''; position: absolute; top: -40px; right: -40px;
+  width: 120px; height: 120px; border-radius: 50%;
+  background: rgba(0,193,106,.1); pointer-events: none;
+}
+.sidebar-promo-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--accent);
+  display: block; margin-bottom: 8px;
+}
+.sidebar-promo h4 { color: var(--white); margin-bottom: 8px; font-size: .95rem; }
+.sidebar-promo p  { color: rgba(255,255,255,.6); font-size: 12.5px; margin: 0; line-height: 1.6; }
+
+.sidebar-links {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; margin-bottom: 16px;
+}
+.sidebar-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 11px 16px; border-bottom: 1px solid var(--border);
+  font-size: 13px; color: var(--text-secondary); cursor: pointer;
+  transition: var(--transition);
+}
+.sidebar-link:last-child { border-bottom: none; }
+.sidebar-link:hover { color: var(--green-700); background: var(--green-50); }
+
+/* ─── KEY NUMBERS ────────────────────────────────────────────────── */
+.kn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 20px 0; }
+.kn {
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 20px; text-align: center;
+}
+.kn-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.8rem; color: var(--green-600); font-weight: 700;
+  display: block; margin-bottom: 4px;
+}
+.kn-desc { font-size: 11.5px; color: var(--text-muted); line-height: 1.5; }
+
+/* ─── CONCEPT GRID ───────────────────────────────────────────────── */
+.cg { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+.cg-card {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 22px; transition: var(--transition);
+}
+.cg-card:hover { border-color: var(--green-400); box-shadow: var(--shadow-sm); }
+.cg-icon { font-size: 22px; margin-bottom: 10px; }
+.cg-card h4 { font-size: .95rem; margin-bottom: 7px; }
+.cg-card p  { font-size: 13px; line-height: 1.65; margin: 0; }
+
+/* ─── BUDGET TOOL ────────────────────────────────────────────────── */
+.bt-wrap {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 24px;
+  box-shadow: var(--shadow-md);
+}
+.bt-head {
+  background: var(--green-900); padding: 24px 28px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;
+}
+.bt-head-text h3 { color: var(--white); font-size: 1.15rem; margin-bottom: 2px; }
+.bt-head-text p  { color: rgba(255,255,255,.5); font-size: 12px; margin: 0; }
+.period-toggle {
+  display: flex; gap: 2px; background: rgba(255,255,255,.08); border-radius: 8px; padding: 3px;
+}
+.per-btn {
+  padding: 5px 12px; border-radius: 6px; border: none;
+  font-size: 12px; font-weight: 600; color: rgba(255,255,255,.5);
+  background: transparent; cursor: pointer; transition: var(--transition);
+}
+.per-btn.active { background: var(--accent); color: var(--green-900); }
+.bt-cols {
+  display: grid; grid-template-columns: 1fr 1fr;
+}
+.bt-col { padding: 24px 26px; }
+.bt-col + .bt-col { border-left: 1px solid var(--border); }
+.bt-col-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 18px;
+}
+.bt-col-head .label {
+  font-size: 11px; font-weight: 700; letter-spacing: .6px;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.bt-col-head .total {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem; color: var(--green-700); font-weight: 700;
+}
+.bt-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 0; border-bottom: 1px solid var(--border); gap: 10px;
+}
+.bt-row:last-of-type { border-bottom: none; }
+.bt-row-label { font-size: 13.5px; color: var(--text-primary); flex: 1; }
+.bt-input-wrap {
+  display: flex; align-items: center; gap: 3px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 7px; padding: 0 10px; height: 34px;
+  transition: var(--transition);
+}
+.bt-input-wrap:focus-within { border-color: var(--green-500); background: var(--white); }
+.bt-input-wrap span { font-size: 12px; color: var(--text-muted); }
+.bt-input-wrap input {
+  width: 80px; border: none; background: transparent;
+  font-size: 13.5px; font-weight: 600; color: var(--text-primary);
+  text-align: right; outline: none;
+}
+.bt-input-wrap input::placeholder { color: rgba(156,163,175,.4); font-weight: 400; }
+.bt-summary { padding: 22px 28px; background: var(--bg); border-top: 1px solid var(--border); }
+.bt-sum-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+.bt-sum-item {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 16px; text-align: center;
+}
+.bt-sum-item .s-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); display: block; margin-bottom: 5px; }
+.bt-sum-item .s-value { font-family: 'Syne', sans-serif; font-size: 1.45rem; font-weight: 700; color: var(--text-primary); display: block; }
+.bt-sum-item.surplus .s-value { color: var(--green-600); }
+.bt-sum-item.deficit .s-value { color: var(--red-text); }
+.bt-bar-wrap { margin-bottom: 14px; }
+.bt-bar-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+.bt-bar { height: 8px; background: var(--border); border-radius: 100px; overflow: hidden; }
+.bt-bar-fill { height: 100%; border-radius: 100px; background: var(--green-500); transition: width .5s cubic-bezier(.4,0,.2,1); }
+.bt-bar-fill.over { background: var(--red-text); }
+.bt-tip-box { display: none; }
+.bt-tip-box.show {
+  display: flex; gap: 10px;
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px 16px;
+}
+.bt-tip-icon { font-size: 18px; flex-shrink: 0; }
+.bt-tip-body strong { font-size: 13px; color: var(--text-primary); display: block; margin-bottom: 3px; }
+.bt-tip-body p { font-size: 12.5px; margin: 0; line-height: 1.6; }
+
+/* ─── MORTGAGE CALC (inline) ─────────────────────────────────────── */
+.mortgage-widget {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: var(--radius-xl); overflow: hidden;
+}
+.mw-head {
+  background: linear-gradient(135deg, var(--green-700) 0%, var(--green-900) 100%);
+  padding: 22px 26px;
+}
+.mw-head h3 { color: var(--white); margin-bottom: 3px; }
+.mw-head p  { color: rgba(255,255,255,.55); font-size: 12px; margin: 0; }
+.mw-body { padding: 24px 26px; }
+.mw-row { margin-bottom: 18px; }
+.mw-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
+.mw-label span:last-child { color: var(--green-600); }
+.mw-result {
+  background: var(--green-900); border-radius: 10px;
+  padding: 18px; text-align: center; margin-top: 18px;
+}
+.mw-result .rl { font-size: 11.5px; color: rgba(255,255,255,.5); margin-bottom: 4px; }
+.mw-result .rv { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 700; color: var(--accent); display: block; line-height: 1; }
+.mw-result .rs { font-size: 11px; color: rgba(255,255,255,.35); margin-top: 4px; }
+.mw-breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.mw-b { background: rgba(255,255,255,.06); border-radius: 8px; padding: 11px; text-align: center; }
+.mw-b span:first-child { font-size: 10.5px; color: rgba(255,255,255,.4); display: block; margin-bottom: 3px; }
+.mw-b span:last-child { font-size: 1rem; color: rgba(255,255,255,.8); font-family: 'Syne', sans-serif; font-weight: 700; }
+
+/* ─── FREE RESOURCES BAR ─────────────────────────────────────────── */
+.free-bar {
+  background: linear-gradient(135deg, var(--green-700), var(--green-900));
+  border-radius: var(--radius-lg); padding: 28px 32px;
+  display: flex; align-items: center; gap: 32px;
+  flex-wrap: wrap; margin: 24px 0;
+}
+.free-bar-text h4 { color: var(--white); margin-bottom: 5px; }
+.free-bar-text p  { color: rgba(255,255,255,.6); font-size: 13px; margin: 0; }
+.free-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.free-link {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px; background: rgba(255,255,255,.1);
+  border-radius: 100px; font-size: 12.5px; color: var(--white);
+  border: 1px solid rgba(255,255,255,.15); cursor: pointer;
+  transition: var(--transition); white-space: nowrap;
+}
+.free-link:hover { background: rgba(255,255,255,.2); }
+
+/* ─── FOOTER ──────────────────────────────────────────────────────── */
+footer {
+  background: var(--green-900);
+  margin-top: 0;
+}
+.footer-main {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px; padding: 56px 0 48px;
+}
+.footer-brand .logo-mark { margin-bottom: 14px; }
+.footer-brand-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.4rem; font-weight: 800; color: var(--white); margin-bottom: 10px;
+}
+.footer-brand-name span { color: #4ade80; }
+.footer-tagline { font-size: 13px; color: rgba(255,255,255,.45); line-height: 1.75; max-width: 240px; }
+.footer-col h5 {
+  font-size: 11px; font-weight: 700; letter-spacing: .8px;
+  text-transform: uppercase; color: rgba(255,255,255,.35);
+  margin-bottom: 16px; font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.footer-col a {
+  display: block; font-size: 13.5px;
+  color: rgba(255,255,255,.6); margin-bottom: 10px;
+  cursor: pointer; transition: var(--transition); text-decoration: none;
+}
+.footer-col a:hover { color: var(--accent); }
+.footer-divider { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 0; }
+.footer-legal { padding: 28px 0; }
+.footer-legal-box {
+  background: rgba(255,255,255,.04); border-radius: 10px;
+  padding: 18px 22px; margin-bottom: 20px;
+}
+.footer-legal-box strong {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 8px;
+}
+.footer-legal-box p { font-size: 11.5px; color: rgba(255,255,255,.38); line-height: 1.75; margin: 0; }
+.footer-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-bottom-links { display: flex; gap: 20px; }
+.footer-bottom-links a { font-size: 11.5px; color: rgba(255,255,255,.3); text-decoration: none; transition: var(--transition); }
+.footer-bottom-links a:hover { color: rgba(255,255,255,.7); }
+.footer-copy { font-size: 11.5px; color: rgba(255,255,255,.25); }
+
+
+/* ─── REFERRAL CTA COMPONENTS ───────────────────────────────────── */
+.rcta {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 26px 28px;
+  margin: 28px 0;
+  background: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+.rcta::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  border-radius: 4px 0 0 4px;
+}
+.rcta-green::before  { background: var(--green-500); }
+.rcta-amber::before  { background: var(--gold); }
+.rcta-teal::before   { background: #0891B2; }
+.rcta-purple::before { background: #7C3AED; }
+
+.rcta-inner { display: flex; gap: 20px; align-items: flex-start; }
+.rcta-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0; margin-top: 2px;
+}
+.rcta-body { flex: 1; min-width: 0; }
+.rcta-eyebrow {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; display: block; margin-bottom: 5px;
+}
+.rcta-green  .rcta-eyebrow { color: var(--green-600); }
+.rcta-amber  .rcta-eyebrow { color: var(--gold); }
+.rcta-teal   .rcta-eyebrow { color: #0891B2; }
+.rcta-purple .rcta-eyebrow { color: #7C3AED; }
+.rcta h4 {
+  font-size: 1.05rem; font-weight: 700;
+  color: var(--text-primary); margin-bottom: 6px;
+  font-family: 'Syne', sans-serif;
+}
+.rcta-desc {
+  font-size: 13.5px; color: var(--text-secondary);
+  line-height: 1.7; margin-bottom: 16px;
+}
+.rcta-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.rcta-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 10px 20px; border-radius: 8px;
+  font-size: 13.5px; font-weight: 600;
+  border: none; cursor: pointer; transition: var(--transition);
+  font-family: 'Plus Jakarta Sans', sans-serif; text-decoration: none;
+}
+.rcta-green  .rcta-btn { background: var(--green-800); color: var(--white); }
+.rcta-green  .rcta-btn:hover { background: var(--green-700); }
+.rcta-amber  .rcta-btn { background: var(--gold); color: var(--white); }
+.rcta-amber  .rcta-btn:hover { background: #b87d08; }
+.rcta-teal   .rcta-btn { background: #0891B2; color: var(--white); }
+.rcta-teal   .rcta-btn:hover { background: #0369A1; }
+.rcta-purple .rcta-btn { background: #7C3AED; color: var(--white); }
+.rcta-purple .rcta-btn:hover { background: #6D28D9; }
+.rcta-disclosure {
+  font-size: 11px; color: var(--text-muted);
+  line-height: 1.55; font-style: italic;
+}
+.rcta-disclosure a { color: var(--text-muted); text-decoration: underline; }
+.rcta-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+.rcta-chip {
+  padding: 4px 11px; border-radius: 100px;
+  font-size: 11.5px; font-weight: 600;
+  background: var(--bg); border: 1.5px solid var(--border);
+  color: var(--text-secondary);
+}
+
+/* ─── UTILS ──────────────────────────────────────────────────────── */
+.mt-4  { margin-top: 4px; }   .mt-8  { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }  .mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }  .mt-32 { margin-top: 32px; }
+.mb-8  { margin-bottom: 8px; }.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px;}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────── */
+@media (max-width: 1080px) {
+  .main-nav { overflow-x: auto; scrollbar-width: none; }
+  .main-nav::-webkit-scrollbar { display: none; }
+  .search-wrap input { width: 160px; }
+  .pop-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-main { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .two-col { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+}
+@media (max-width: 860px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+  .hero-grid  { grid-template-columns: repeat(2, 1fr); }
+  .trust-inner { grid-template-columns: repeat(2, 1fr); }
+  .trust-item:nth-child(2) { border-right: none; }
+  .cta-band-inner { grid-template-columns: 1fr; gap: 24px; }
+  .newsletter-inner { grid-template-columns: 1fr; gap: 28px; }
+  .kn-grid { grid-template-columns: 1fr 1fr; }
+  .cg      { grid-template-columns: 1fr; }
+  .bt-cols { grid-template-columns: 1fr; }
+  .bt-col + .bt-col { border-left: none; border-top: 1px solid var(--border); }
+  .bt-sum-grid { grid-template-columns: 1fr; }
+  .mw-breakdown { grid-template-columns: 1fr; }
+  .footer-main { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .header-inner { grid-template-columns: auto 1fr auto; gap: 12px; }
+  .main-nav { display: none; }
+  .header-search .search-wrap { display: none; }
+  .mob-toggle { display: flex; }
+  .hero-grid { grid-template-columns: 1fr 1fr; }
+  .hero h1 { font-size: 1.85rem; }
+  .pop-grid { grid-template-columns: 1fr; }
+  .trust-inner { grid-template-columns: 1fr; }
+  .trust-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,.08); }
+  .section { padding: 48px 0; }
+  .nl-form-row { flex-direction: column; }
+  .free-bar { flex-direction: column; align-items: flex-start; gap: 16px; }
+}
+@media (max-width: 420px) {
+  .hero-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── ACCENT COLOR HELPERS ───────────────────────────────────────── */
+.bg-teal   { background: rgba(0,193,106,.08); }
+.bg-amber  { background: rgba(212,147,10,.08); }
+.bg-blue   { background: rgba(59,130,246,.08); }
+.bg-purple { background: rgba(139,92,246,.08); }
+.bg-red    { background: rgba(239,68,68,.08);  }
+.bg-cyan   { background: rgba(6,182,212,.08);  }
+.bg-orange { background: rgba(249,115,22,.08); }
+.bg-green  { background: rgba(34,129,74,.08);  }
+
+/* ─── REFERRAL MODAL ─────────────────────────────────────────────── */
+.modal-backdrop {
+  display: none;
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(10,46,26,.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-backdrop.open { display: flex; animation: mFadeIn .2s ease; }
+@keyframes mFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 24px 80px rgba(0,0,0,.22);
+  width: 100%; max-width: 520px;
+  max-height: 90vh; overflow-y: auto;
+  animation: mSlideUp .25s cubic-bezier(.4,0,.2,1);
+}
+@keyframes mSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.modal-header {
+  padding: 24px 28px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+}
+.modal-header-left { display: flex; align-items: center; gap: 14px; }
+.modal-header-icon {
+  width: 46px; height: 46px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.modal-eyebrow {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; display: block; margin-bottom: 3px;
+  color: var(--green-600);
+}
+.modal-title { font-size: 1rem; font-weight: 700; color: var(--text-primary); font-family: "Syne", sans-serif; }
+.modal-close {
+  background: none; border: none; cursor: pointer;
+  width: 32px; height: 32px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); font-size: 18px;
+  transition: var(--transition); flex-shrink: 0;
+}
+.modal-close:hover { background: var(--bg); color: var(--text-primary); }
+
+.modal-body { padding: 24px 28px; }
+.modal-disclaimer {
+  background: var(--gold-bg); border: 1.5px solid var(--gold-border);
+  border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 22px;
+}
+.modal-disclaimer p { font-size: 11.5px; color: #7A5500; line-height: 1.65; margin: 0; }
+
+.form-row { margin-bottom: 16px; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.form-label {
+  display: block; font-size: 12.5px; font-weight: 600;
+  color: var(--text-secondary); margin-bottom: 6px;
+}
+.form-required { color: var(--green-600); }
+.form-input {
+  width: 100%; border: 1.5px solid var(--border-mid);
+  border-radius: 8px; padding: 11px 14px;
+  font-size: 14px; font-family: "Plus Jakarta Sans", sans-serif;
+  color: var(--text-primary); background: var(--white);
+  outline: none; transition: var(--transition);
+  -webkit-appearance: none;
+}
+.form-input:focus {
+  border-color: var(--green-500);
+  box-shadow: 0 0 0 3px rgba(34,129,74,.1);
+}
+.form-input::placeholder { color: var(--text-muted); }
+select.form-input { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239CA3AF' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.6; }
+.form-hint { font-size: 11.5px; color: var(--text-muted); margin-top: 5px; line-height: 1.5; }
+
+.modal-footer {
+  padding: 16px 28px 24px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.modal-submit {
+  width: 100%; padding: 14px;
+  background: var(--green-800); color: var(--white);
+  border: none; border-radius: 8px;
+  font-size: 14.5px; font-weight: 700;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  cursor: pointer; transition: var(--transition);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.modal-submit:hover { background: var(--green-700); }
+.modal-submit:disabled { opacity: .6; cursor: not-allowed; }
+.modal-fine-print {
+  font-size: 11px; color: var(--text-muted);
+  text-align: center; line-height: 1.65;
+}
+.modal-fine-print a { color: var(--text-muted); text-decoration: underline; }
+
+.modal-success {
+  display: none; text-align: center; padding: 40px 28px 36px;
+}
+.modal-success-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--green-50); border: 2px solid var(--green-100);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; margin: 0 auto 18px;
+}
+.modal-success h3 { font-size: 1.25rem; margin-bottom: 10px; }
+.modal-success p  { font-size: 14px; color: var(--text-secondary); margin-bottom: 22px; }
+.modal-success-close {
+  padding: 11px 28px; background: var(--green-800); color: var(--white);
+  border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
+  font-family: "Plus Jakarta Sans", sans-serif; cursor: pointer;
+  transition: var(--transition);
+}
+.modal-success-close:hover { background: var(--green-700); }
+
+@media (max-width: 540px) {
+  .modal { border-radius: var(--radius-lg); }
+  .modal-header, .modal-body, .modal-footer { padding-left: 20px; padding-right: 20px; }
+  .form-row-2 { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════ HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" onclick="goHome()">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M4 7h10M4 12h7M4 17h10" stroke="#C4F23C" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="19" cy="7" r="2" fill="#C4F23C"/>
+          <circle cx="16" cy="14" r="3.5" stroke="#C4F23C" stroke-width="2"/>
+          <path d="M19 16.5l2 2" stroke="#C4F23C" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="logo-wordmark">fi<span>nfo</span></span>
+    </a>
+
+    <nav class="main-nav" aria-label="Main navigation">
+      <button class="nav-link" onclick="showPage('home')">Home</button>
+      <button class="nav-link" onclick="showPage('budget')">Budget &amp; Save</button>
+      <button class="nav-link" onclick="showPage('banking')">Banking</button>
+      <button class="nav-link" onclick="showPage('debt')">Debt</button>
+      <button class="nav-link" onclick="showPage('property')">Property</button>
+      <button class="nav-link" onclick="showPage('investing')">Investing</button>
+      <button class="nav-link" onclick="showPage('super')">Super</button>
+      <button class="nav-link" onclick="showPage('insurance')">Insurance</button>
+      <button class="nav-link" onclick="showPage('safety')">Stay Safe</button>
+    </nav>
+
+    <div class="header-search">
+      <div class="search-wrap" role="search">
+        <input type="text" id="headerSearch" placeholder="Search topics…" onkeydown="if(event.key==='Enter')doSearch('headerSearch')">
+        <button class="search-btn-icon" onclick="doSearch('headerSearch')" aria-label="Search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+      </div>
+      <button class="mob-toggle" onclick="toggleMob()" id="mobToggle" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" id="mobIcon"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile drawer -->
+<div class="mob-drawer" id="mobDrawer">
+  <button class="nav-link" onclick="showPage('home');toggleMob()">🏠 Home</button>
+  <button class="nav-link" onclick="showPage('budget');toggleMob()">💰 Budget &amp; Save</button>
+  <button class="nav-link" onclick="showPage('banking');toggleMob()">🏦 Banking</button>
+  <button class="nav-link" onclick="showPage('debt');toggleMob()">💳 Debt</button>
+  <button class="nav-link" onclick="showPage('property');toggleMob()">🏠 Property</button>
+  <button class="nav-link" onclick="showPage('investing');toggleMob()">📈 Investing</button>
+  <button class="nav-link" onclick="showPage('super');toggleMob()">🔒 Super</button>
+  <button class="nav-link" onclick="showPage('insurance');toggleMob()">🛡️ Insurance</button>
+  <button class="nav-link" onclick="showPage('safety');toggleMob()">✅ Stay Safe</button>
+</div>
+
+
+<!-- ════════════════════════════════════════════════ HOME PAGE -->
+<main>
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <section class="hero" aria-label="Hero">
+    <div class="hero-bg-shape"></div>
+    <div class="hero-bg-dots"></div>
+    <div class="hero-inner container">
+      <div class="hero-text">
+        <div class="hero-badge">Free for all Australians &nbsp;·&nbsp; Built for everyday people</div>
+        <h1>Financial information,<br><em>not advice.</em></h1>
+        <p class="hero-sub">Clear, plain-English information about every financial topic that matters — without the hefty advice fee. Made for everyday Australians.</p>
+        <div class="hero-search" role="search">
+          <input type="text" id="heroSearch" placeholder="Try 'how does super work' or 'what is negative gearing'…" onkeydown="if(event.key==='Enter')doSearch('heroSearch')">
+          <button class="hero-search-btn" onclick="doSearch('heroSearch')">Search</button>
+        </div>
+        <div class="hero-quick">
+          <button class="hero-quick-btn" onclick="showPage('budget')">Budget planner</button>
+          <button class="hero-quick-btn" onclick="showPage('property')">Mortgage calculator</button>
+          <button class="hero-quick-btn" onclick="showPage('super')">Super explained</button>
+          <button class="hero-quick-btn" onclick="showPage('investing')">ETFs &amp; shares</button>
+          <button class="hero-quick-btn" onclick="showPage('safety')">Spot a scam</button>
+        </div>
+      </div>
+
+      <!-- Category grid -->
+      <div class="hero-grid" role="navigation" aria-label="Topic categories">
+        <button class="hero-cat" onclick="showPage('budget')">
+          <div class="hero-cat-icon bg-teal">💰</div>
+          <div><div class="hero-cat-label">Budget &amp; Save</div><div class="hero-cat-desc">Spending, saving goals &amp; emergency funds</div></div>
+        </button>
+        <button class="hero-cat" onclick="showPage('banking')">
+          <div class="hero-cat-icon bg-green">🏦</div>
+          <div><div class="hero-cat-label">Banking</div><div class="hero-cat-desc">Accounts, interest rates &amp; fees</div></div>
+        </button>
+        <button class="hero-cat" onclick="showPage('debt')">
+          <div class="hero-cat-icon bg-red">💳</div>
+          <div><div class="hero-cat-label">Debt</div><div class="hero-cat-desc">Credit scores, loans &amp; repayment</div></div>
+        </button>
+        <button class="hero-cat" onclick="showPage('property')">
+          <div class="hero-cat-icon bg-amber">🏠</div>
+          <div><div class="hero-cat-label">Property</div><div class="hero-cat-desc">Mortgages, first home &amp; investment</div></div>
+        </button>
+        <button class="hero-cat" onclick="showPage('investing')">
+          <div class="hero-cat-icon bg-blue">📈</div>
+          <div><div class="hero-cat-label">Investing</div><div class="hero-cat-desc">Shares, ETFs, crypto &amp; compounding</div></div>
+        </button>
+        <button class="hero-cat" onclick="showPage('super')">
+          <div class="hero-cat-icon bg-purple">🔒</div>
+          <div><div class="hero-cat-label">Super</div><div class="hero-cat-desc">Contributions, SMSFs &amp; retirement</div></div>
+        </button>
+        <button class="hero-cat" onclick="showPage('insurance')">
+          <div class="hero-cat-icon bg-cyan">🛡️</div>
+          <div><div class="hero-cat-label">Insurance</div><div class="hero-cat-desc">Life, income protection &amp; health</div></div>
+        </button>
+        <button class="hero-cat" onclick="showPage('safety')">
+          <div class="hero-cat-icon bg-orange">✅</div>
+          <div><div class="hero-cat-label">Stay Safe</div><div class="hero-cat-desc">Scams, adviser checks &amp; free help</div></div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST BAR -->
+  <div class="trust-bar" role="complementary">
+    <div class="trust-inner container">
+      <div class="trust-item">
+        <div class="trust-icon">📋</div>
+        <div class="trust-text"><strong>100% free</strong><span>No subscriptions or fees</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🇦🇺</div>
+        <div class="trust-text"><strong>Australian focused</strong><span>ASIC & ATO aligned content</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">⚖️</div>
+        <div class="trust-text"><strong>General information only</strong><span>Not personal financial advice</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🚫</div>
+        <div class="trust-text"><strong>Always transparent</strong><span>Clear about what we are and aren't</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURED CTA BAND -->
+  <section class="cta-band" aria-label="Budget planner feature">
+    <div class="cta-band-pattern"></div>
+    <div class="cta-band-inner container">
+      <div>
+        <span class="cta-eyebrow">Featured tool</span>
+        <h2>Start with your budget.<br>Everything else follows.</h2>
+        <p>Understanding your cash flow is the foundation of every financial decision. Our free interactive budget planner shows exactly where your money goes — and where you can get ahead.</p>
+        <div class="cta-actions">
+          <button class="btn btn-primary" onclick="showPage('budget')">Open Budget Planner →</button>
+          <button class="btn btn-ghost" onclick="showPage('property')">Try Mortgage Calculator</button>
+        </div>
+      </div>
+      <div style="text-align:center; padding: 24px 0;">
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:28px 32px;min-width:240px;">
+          <div style="font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;">Monthly surplus</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:3rem;color:var(--accent);line-height:1;">$1,240</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.35);margin-top:8px;">After all expenses · 24% savings rate</div>
+          <div style="display:flex;gap:6px;margin-top:16px;justify-content:center;">
+            <div style="height:5px;flex:3;background:var(--accent);border-radius:3px;"></div>
+            <div style="height:5px;flex:5;background:rgba(255,255,255,.15);border-radius:3px;"></div>
+            <div style="height:5px;flex:2;background:rgba(255,255,255,.1);border-radius:3px;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10.5px;color:rgba(255,255,255,.3);margin-top:5px;"><span>Savings</span><span>Expenses</span><span>Debt</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALCULATOR CAROUSEL -->
+  <section class="calc-section section" aria-label="Calculators">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">Interactive tools</span>
+        <h2>Free calculators</h2>
+        <p>Explore your numbers with our interactive tools. General estimates only — not a substitute for professional advice.</p>
+      </div>
+      <div class="carousel-wrap">
+        <div class="carousel-track" id="calcCarousel">
+
+          <!-- MORTGAGE CALC CARD -->
+          <div class="calc-card">
+            <div class="calc-card-header">
+              <div class="calc-card-icon bg-amber">🏠</div>
+              <div><h4>Mortgage repayment</h4><p>Estimate your monthly home loan repayments based on loan size, rate, and term.</p></div>
+            </div>
+            <div class="calc-card-body">
+              <div class="calc-input-row">
+                <label>Loan amount <span class="val" id="cc-loan-val">$500,000</span></label>
+                <input type="range" min="100000" max="2000000" step="10000" value="500000" id="cc-loan" oninput="calcCards()">
+              </div>
+              <div class="calc-input-row">
+                <label>Interest rate <span class="val" id="cc-rate-val">6.0%</span></label>
+                <input type="range" min="2" max="12" step="0.1" value="6.0" id="cc-rate" oninput="calcCards()">
+              </div>
+              <div class="calc-input-row">
+                <label>Loan term <span class="val" id="cc-term-val">30 yrs</span></label>
+                <input type="range" min="10" max="30" step="1" value="30" id="cc-term" oninput="calcCards()">
+              </div>
+              <div class="calc-result">
+                <div class="label">Est. monthly repayment</div>
+                <div class="value" id="cc-mortgage-result">$2,998</div>
+                <div class="sub" id="cc-mortgage-sub">Total interest: $579K</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SAVINGS GOAL CARD -->
+          <div class="calc-card">
+            <div class="calc-card-header">
+              <div class="calc-card-icon bg-teal">🎯</div>
+              <div><h4>Savings goal planner</h4><p>See how long it takes to reach your target with regular savings contributions.</p></div>
+            </div>
+            <div class="calc-card-body">
+              <div class="calc-input-row">
+                <label>Savings goal <span class="val" id="cc-goal-val">$20,000</span></label>
+                <input type="range" min="1000" max="200000" step="1000" value="20000" id="cc-goal" oninput="calcCards()">
+              </div>
+              <div class="calc-input-row">
+                <label>Monthly savings <span class="val" id="cc-save-val">$500</span></label>
+                <input type="range" min="50" max="5000" step="50" value="500" id="cc-save" oninput="calcCards()">
+              </div>
+              <div class="calc-input-row">
+                <label>Interest rate (p.a.) <span class="val" id="cc-sint-val">4.5%</span></label>
+                <input type="range" min="0" max="8" step="0.1" value="4.5" id="cc-sint" oninput="calcCards()">
+              </div>
+              <div class="calc-result">
+                <div class="label">Time to reach goal</div>
+                <div class="value" id="cc-goal-result">3y 2m</div>
+                <div class="sub" id="cc-goal-sub">Interest earned: $1,560</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- COMPOUND INTEREST -->
+          <div class="calc-card">
+            <div class="calc-card-header">
+              <div class="calc-card-icon bg-blue">📈</div>
+              <div><h4>Compound growth</h4><p>See the power of compounding on a lump sum investment over time.</p></div>
+            </div>
+            <div class="calc-card-body">
+              <div class="calc-input-row">
+                <label>Starting amount <span class="val" id="cc-cstart-val">$10,000</span></label>
+                <input type="range" min="1000" max="500000" step="1000" value="10000" id="cc-cstart" oninput="calcCards()">
+              </div>
+              <div class="calc-input-row">
+                <label>Annual return <span class="val" id="cc-crate-val">7.0%</span></label>
+                <input type="range" min="1" max="15" step="0.5" value="7.0" id="cc-crate" oninput="calcCards()">
+              </div>
+              <div class="calc-input-row">
+                <label>Years invested <span class="val" id="cc-cyears-val">20 yrs</span></label>
+                <input type="range" min="1" max="40" step="1" value="20" id="cc-cyears" oninput="calcCards()">
+              </div>
+              <div class="calc-result">
+                <div class="label">Estimated future value</div>
+                <div class="value" id="cc-compound-result">$38,697</div>
+                <div class="sub" id="cc-compound-sub">Gain: $28,697 · 3.87× your money</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- DEBT REPAYMENT -->
+          <div class="calc-card">
+            <div class="calc-card-header">
+              <div class="calc-card-icon bg-red">💳</div>
+              <div><h4>Debt payoff estimator</h4><p>See how long to clear a debt at a set repayment amount — and the total interest paid.</p></div>
+            </div>
+            <div class="calc-card-body">
+              <div class="calc-input-row">
+                <label>Debt balance <span class="val" id="cc-dbal-val">$8,000</span></label>
+                <input type="range" min="500" max="100000" step="500" value="8000" id="cc-dbal" oninput="calcCards()">
+              </div>
+              <div class="calc-input-row">
+                <label>Interest rate (p.a.) <span class="val" id="cc-drate-val">19.9%</span></label>
+                <input type="range" min="5" max="30" step="0.5" value="19.9" id="cc-drate" oninput="calcCards()">
+              </div>
+              <div class="calc-input-row">
+                <label>Monthly repayment <span class="val" id="cc-drep-val">$250</span></label>
+                <input type="range" min="50" max="5000" step="50" value="250" id="cc-drep" oninput="calcCards()">
+              </div>
+              <div class="calc-result">
+                <div class="label">Time to pay off</div>
+                <div class="value" id="cc-debt-result">4y 2m</div>
+                <div class="sub" id="cc-debt-sub">Total interest: $4,482</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /carousel-track -->
+        <div class="carousel-nav">
+          <button class="carousel-btn" onclick="scrollCarousel(-1)" aria-label="Previous">←</button>
+          <button class="carousel-btn" onclick="scrollCarousel(1)"  aria-label="Next">→</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- POPULAR LINKS GRID -->
+  <section class="section" style="background:var(--white);border-top:1px solid var(--border);" aria-label="Popular articles">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">Start here</span>
+        <h2>Popular guides</h2>
+        <p>The most searched financial topics by Australians — explained in plain English.</p>
+      </div>
+      <div class="pop-grid">
+
+        <div class="pop-card" onclick="showPage('property')">
+          <div class="pop-card-top"><div class="pop-cat-icon bg-amber">🏠</div><div class="pop-tag">Property</div></div>
+          <h4>What is LMI and how can I avoid it?</h4>
+          <p>Lenders Mortgage Insurance explained — what it costs, who pays it, and your options for avoiding it with a smaller deposit.</p>
+          <div class="pop-arrow">Read more <span>→</span></div>
+        </div>
+
+        <div class="pop-card" onclick="showPage('super')">
+          <div class="pop-card-top"><div class="pop-cat-icon bg-purple">🔒</div><div class="pop-tag">Super</div></div>
+          <h4>How does salary sacrificing into super work?</h4>
+          <p>Directing pre-tax salary into super can reduce your taxable income. Here's how it works, the caps, and what to consider.</p>
+          <div class="pop-arrow">Read more <span>→</span></div>
+        </div>
+
+        <div class="pop-card" onclick="showPage('investing')">
+          <div class="pop-card-top"><div class="pop-cat-icon bg-blue">📈</div><div class="pop-tag">Investing</div></div>
+          <h4>ETFs vs managed funds — what's the difference?</h4>
+          <p>Both pool your money across many assets, but the structure, fees, and trading mechanics are quite different. Here's a comparison.</p>
+          <div class="pop-arrow">Read more <span>→</span></div>
+        </div>
+
+        <div class="pop-card" onclick="showPage('debt')">
+          <div class="pop-card-top"><div class="pop-cat-icon bg-red">💳</div><div class="pop-tag">Debt</div></div>
+          <h4>Avalanche vs snowball — which debt strategy works?</h4>
+          <p>Two well-known debt repayment approaches compared — one is mathematically optimal, the other wins on psychology.</p>
+          <div class="pop-arrow">Read more <span>→</span></div>
+        </div>
+
+        <div class="pop-card" onclick="showPage('property')">
+          <div class="pop-card-top"><div class="pop-cat-icon bg-amber">🏠</div><div class="pop-tag">Property</div></div>
+          <h4>First Home Buyer schemes in Australia — 2025 guide</h4>
+          <p>FHBG, FHSS, stamp duty concessions and FHOG explained — eligibility, caps, and how to apply.</p>
+          <div class="pop-arrow">Read more <span>→</span></div>
+        </div>
+
+        <div class="pop-card" onclick="showPage('safety')">
+          <div class="pop-card-top"><div class="pop-cat-icon bg-orange">✅</div><div class="pop-tag">Stay Safe</div></div>
+          <h4>How to check if a financial adviser is legitimate</h4>
+          <p>Before engaging any adviser, verify them on the ASIC Financial Advisers Register. Here's exactly how to do it.</p>
+          <div class="pop-arrow">Read more <span>→</span></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter" aria-label="Newsletter signup">
+    <div class="newsletter-inner container">
+      <div>
+        <span class="section-eyebrow">Stay informed</span>
+        <h2>Financial updates, simply explained.</h2>
+        <p>Monthly plain-English summaries of interest rate changes, super updates, government schemes, and what they mean for everyday Australians. No spam, ever.</p>
+      </div>
+      <div>
+        <form class="nl-form" name="finfo-subscribers" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="handleSubscribe(event)">
+          <input type="hidden" name="form-name" value="finfo-subscribers">
+          <p style="display:none;"><input name="bot-field"></p>
+          <div class="nl-form-row">
+            <input type="email" name="email" placeholder="Your email address" required>
+            <button type="submit" class="btn btn-primary" style="white-space:nowrap;">Subscribe free</button>
+          </div>
+          <p class="nl-disclaimer">By subscribing you agree to our Privacy Policy. Finfo provides general information only — not personal financial advice. Unsubscribe anytime.</p>
+          <div id="nl-success" style="display:none;background:var(--green-50);border:1.5px solid var(--green-100);border-radius:8px;padding:14px 18px;margin-top:8px;">
+            <strong style="font-size:13.5px;color:var(--green-700);">&#x2705; You're on the list!</strong>
+            <p style="font-size:12.5px;color:var(--green-800);margin:4px 0 0;">Thanks for subscribing. We'll be in touch with your first update soon.</p>
+          </div>
+        </form>
+        <div style="display:flex;gap:20px;margin-top:20px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-muted);">✅ Free always</div>
+          <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-muted);">✅ No spam</div>
+          <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-muted);">✅ Unsubscribe anytime</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /home page -->
+
+
+<!-- ════════════════════════════════════════════════ BUDGET PAGE -->
+<div class="page" id="page-budget">
+  <div class="page-banner"><div class="container">
+    <div class="breadcrumb"><span onclick="goHome()">Home</span><span class="sep">›</span><span>Budget &amp; Save</span></div>
+    <div class="page-banner-inner">
+      <div class="page-banner-icon bg-teal">💰</div>
+      <div><h1>Budget &amp; Save</h1><p>Track income and expenses, build emergency funds, and plan toward your goals.</p></div>
+    </div>
+  </div></div>
+  <div class="page-body"><div class="container">
+    <div class="two-col">
+      <div>
+        <h3 class="mb-16">Key concepts</h3>
+        <div class="cg">
+          <div class="cg-card"><div class="cg-icon">📊</div><h4>What is a budget?</h4><p>A plan that tracks income against expenses over a period — showing whether you're spending more or less than you earn, and where your money is actually going.</p></div>
+          <div class="cg-card"><div class="cg-icon">🚨</div><h4>Emergency fund</h4><p>A cash reserve for unexpected costs — job loss, car repairs, medical bills. A widely-referenced general guideline is 3–6 months of essential living expenses in an accessible account.</p></div>
+          <div class="cg-card"><div class="cg-icon">🎯</div><h4>Savings goals</h4><p>A defined target — house deposit, holiday, investment — with a timeframe and required monthly saving amount worked backward from the total.</p></div>
+          <div class="cg-card"><div class="cg-icon">📉</div><h4>Fixed vs variable costs</h4><p>Fixed costs are the same each month (rent, loan repayments). Variable costs change (groceries, entertainment). The split determines where your budget has flexibility.</p></div>
+        </div>
+
+        <div class="card">
+          <h3>The 50/30/20 rule</h3>
+          <div class="gaw"><span class="gaw-label">⚠️ General Advice Warning</span><p>The following is general in nature and does not take into account your objectives, financial situation, or needs. Before acting, consider whether it is appropriate for you. Consider speaking with a licensed financial adviser.</p></div>
+          <p>A widely-referenced budgeting framework that divides take-home income into three broad buckets:</p>
+          <div class="kn-grid mt-16">
+            <div class="kn"><span class="kn-num">50%</span><span class="kn-desc">Needs — housing, groceries, utilities, transport, insurance</span></div>
+            <div class="kn"><span class="kn-num">30%</span><span class="kn-desc">Wants — dining, entertainment, travel, subscriptions</span></div>
+            <div class="kn"><span class="kn-num">20%</span><span class="kn-desc">Savings &amp; debt repayment — emergency fund, investments, extra loan payments</span></div>
+          </div>
+          <p class="mt-16">Housing costs in major Australian cities often exceed 50% of income for many people, which may require adjusting the wants or savings categories. The value of any framework is building the habit of allocation — not hitting exact percentages.</p>
+          <div class="tip mt-16"><strong>💡 The best budget is one you'll actually use</strong><p>Some prefer zero-based budgeting (every dollar assigned a job). Others prefer the envelope method. Any approach that keeps you tracking is better than none.</p></div>
+        </div>
+
+        <!-- BUDGET TOOL -->
+        <h3 class="mt-32 mb-16">Interactive Budget Planner</h3>
+        <div class="bt-wrap">
+          <div class="bt-head">
+            <div class="bt-head-text"><h3>Your Budget</h3><p>Enter amounts in your preferred period — results update instantly</p></div>
+            <div class="period-toggle">
+              <button class="per-btn active" onclick="setPeriod('weekly',this)">Weekly</button>
+              <button class="per-btn" onclick="setPeriod('fortnightly',this)">Fortnightly</button>
+              <button class="per-btn" onclick="setPeriod('monthly',this)">Monthly</button>
+              <button class="per-btn" onclick="setPeriod('annual',this)">Annual</button>
+            </div>
+          </div>
+          <div class="bt-cols">
+            <div class="bt-col">
+              <div class="bt-col-head"><span class="label">Income</span><span class="total" id="bt-inc-total">$0</span></div>
+              <div class="bt-row"><span class="bt-row-label">Take-home pay (after tax)</span><div class="bt-input-wrap"><span>$</span><input type="number" id="i1" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+              <div class="bt-row"><span class="bt-row-label">Partner / other income</span><div class="bt-input-wrap"><span>$</span><input type="number" id="i2" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+              <div class="bt-row"><span class="bt-row-label">Government payments</span><div class="bt-input-wrap"><span>$</span><input type="number" id="i3" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+              <div class="bt-row"><span class="bt-row-label">Rental income (net)</span><div class="bt-input-wrap"><span>$</span><input type="number" id="i4" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+              <div class="bt-row"><span class="bt-row-label">Other income</span><div class="bt-input-wrap"><span>$</span><input type="number" id="i5" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+            </div>
+            <div class="bt-col">
+              <div class="bt-col-head"><span class="label">Expenses</span><span class="total" id="bt-exp-total">$0</span></div>
+              <div class="bt-row"><span class="bt-row-label">Housing (rent / mortgage)</span><div class="bt-input-wrap"><span>$</span><input type="number" id="e1" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+              <div class="bt-row"><span class="bt-row-label">Utilities &amp; internet</span><div class="bt-input-wrap"><span>$</span><input type="number" id="e2" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+              <div class="bt-row"><span class="bt-row-label">Food &amp; groceries</span><div class="bt-input-wrap"><span>$</span><input type="number" id="e3" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+              <div class="bt-row"><span class="bt-row-label">Transport (car, fuel, PT)</span><div class="bt-input-wrap"><span>$</span><input type="number" id="e4" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+              <div class="bt-row"><span class="bt-row-label">Health &amp; medical</span><div class="bt-input-wrap"><span>$</span><input type="number" id="e5" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+              <div class="bt-row"><span class="bt-row-label">Insurance</span><div class="bt-input-wrap"><span>$</span><input type="number" id="e6" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+              <div class="bt-row"><span class="bt-row-label">Entertainment &amp; dining</span><div class="bt-input-wrap"><span>$</span><input type="number" id="e7" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+              <div class="bt-row"><span class="bt-row-label">Clothing &amp; personal</span><div class="bt-input-wrap"><span>$</span><input type="number" id="e8" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+              <div class="bt-row"><span class="bt-row-label">Subscriptions &amp; tech</span><div class="bt-input-wrap"><span>$</span><input type="number" id="e9" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+              <div class="bt-row"><span class="bt-row-label">Savings contributions</span><div class="bt-input-wrap"><span>$</span><input type="number" id="e10" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+              <div class="bt-row"><span class="bt-row-label">Debt repayments</span><div class="bt-input-wrap"><span>$</span><input type="number" id="e11" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+              <div class="bt-row"><span class="bt-row-label">Other expenses</span><div class="bt-input-wrap"><span>$</span><input type="number" id="e12" placeholder="0" oninput="calcBudget()" min="0"></div></div>
+            </div>
+          </div>
+          <div class="bt-summary">
+            <div class="bt-sum-grid">
+              <div class="bt-sum-item"><span class="s-label">Total Income</span><span class="s-value" id="bt-s-inc">$0</span></div>
+              <div class="bt-sum-item"><span class="s-label">Total Expenses</span><span class="s-value" id="bt-s-exp">$0</span></div>
+              <div class="bt-sum-item" id="bt-s-surp-item"><span class="s-label">Surplus / Deficit</span><span class="s-value" id="bt-s-surp">$0</span></div>
+            </div>
+            <div class="bt-bar-wrap">
+              <div class="bt-bar-labels"><span>Expenses as % of income</span><span id="bt-pct-label">0%</span></div>
+              <div class="bt-bar"><div class="bt-bar-fill" id="bt-bar-fill" style="width:0%"></div></div>
+            </div>
+            <div class="bt-tip-box" id="bt-tip">
+              <div class="bt-tip-icon">💡</div>
+              <div class="bt-tip-body"><strong id="bt-tip-title">Your position</strong><p id="bt-tip-text"></p></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="mt-8 mb-16">Common questions</h3>
+        <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">How do I budget on an irregular income?<span class="chevron">▾</span></button><div class="acc-body"><p>Base your budget on your lowest realistic monthly income and treat extra earnings as a bonus to direct toward savings or debt. Keep a larger buffer — often 2–3 months of expenses — to smooth lean periods. Some people "pay themselves a salary" by depositing all income into one account and transferring a fixed amount weekly for regular expenses.</p></div></div>
+        <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">What's the difference between a savings and offset account?<span class="chevron">▾</span></button><div class="acc-body"><p>A savings account pays interest on your balance. An offset account is linked to a home loan — the balance reduces the portion of the loan that attracts interest. For example, a $400,000 loan with $20,000 in an offset means interest is only charged on $380,000. The effective return equals your home loan interest rate, which is typically higher than savings account rates, and is not subject to income tax on the "interest saved."</p></div></div>
+        <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">What is Buy Now Pay Later and what should I know?<span class="chevron">▾</span></button><div class="acc-body"><p>BNPL services (Afterpay, Zip, Klarna) split purchases into interest-free instalments and are now regulated as credit products in Australia. Missed payment fees accumulate quickly; BNPL usage may be assessed by home loan lenders; and the ease of use can encourage spending beyond your planned budget. It works well for planned purchases within budget — it's a different proposition when used to bridge income gaps.</p></div></div>
+      </div>
+      <div class="sidebar">
+        <div class="sidebar-nav"><div class="sidebar-nav-title">In this section</div>
+          <div class="sidebar-nav-item" onclick="showPage('banking')"><div class="si">🏦</div>Banking &amp; Accounts</div>
+          <div class="sidebar-nav-item" onclick="showPage('debt')"><div class="si">💳</div>Debt Management</div>
+          <div class="sidebar-nav-item" onclick="showPage('property')"><div class="si">🏠</div>Home Deposit Planning</div>
+          <div class="sidebar-nav-item" onclick="showPage('investing')"><div class="si">📈</div>Saving vs Investing</div>
+        </div>
+        <div class="sidebar-promo">
+          <span class="sidebar-promo-label">Free resource</span>
+          <h4>ASIC MoneySmart</h4>
+          <p>Government-built budget planner and calculators at moneysmart.gov.au — worth bookmarking alongside Finfo.</p>
+        </div>
+        <div class="sidebar-links">
+          <div class="sidebar-link">📞 National Debt Helpline: 1800 007 007</div>
+          <div class="sidebar-link">🏛️ Centrelink FIS: 132 300</div>
+          <div class="sidebar-link">🔍 moneysmart.gov.au</div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ════════════════════════════════════════════════ BANKING PAGE -->
+<div class="page" id="page-banking">
+  <div class="page-banner"><div class="container">
+    <div class="breadcrumb"><span onclick="goHome()">Home</span><span class="sep">›</span><span>Banking</span></div>
+    <div class="page-banner-inner"><div class="page-banner-icon bg-green">🏦</div><div><h1>Banking &amp; Everyday Money</h1><p>Accounts, interest rates, fees, and how the banking system works for you.</p></div></div>
+  </div></div>
+  <div class="page-body"><div class="container"><div class="two-col">
+    <div>
+      <div class="card"><h3>Types of bank accounts</h3>
+        <table class="tbl"><tr><th>Account type</th><th>Purpose</th><th>Interest</th><th>Access</th></tr>
+        <tr><td>Transaction / everyday</td><td>Day-to-day spending &amp; bills</td><td class="neg">Minimal</td><td class="pos">Instant</td></tr>
+        <tr><td>High-interest savings</td><td>Building toward goals</td><td class="pos">Higher (often conditional)</td><td class="pos">Same-day</td></tr>
+        <tr><td>Term deposit</td><td>Locking in a fixed rate</td><td class="pos">Fixed, often competitive</td><td class="neg">Locked until maturity</td></tr>
+        <tr><td>Offset account</td><td>Linked to home loan</td><td class="pos">Effective return = loan rate</td><td class="pos">Full access</td></tr></table>
+      </div>
+      <div class="card"><h3>Conditional bonus rates — read the fine print</h3>
+        <p>Many high-interest savings accounts advertise a rate that only applies if you meet specific monthly conditions — minimum deposits, growing your balance, or a minimum number of card transactions. The base rate (without conditions) is often substantially lower.</p>
+        <div class="tip mt-16"><strong>💡 Example</strong><p>A savings account advertised at 5.5% p.a. may have a base rate of 0.5% p.a. and a bonus rate of 5.0% p.a. — only paid if every condition is met that month. Missing one condition means earning the lower rate for the entire month.</p></div>
+      </div>
+      <div class="card"><h3>The $250,000 Government Guarantee</h3>
+        <p>Deposits held with Australian Authorised Deposit-taking Institutions (ADIs — banks, credit unions, building societies) are protected up to <strong style="color:var(--text-primary);">$250,000 per account holder per ADI</strong> under the Financial Claims Scheme (FCS). If you hold more than $250,000 in deposits, spreading across multiple ADIs extends coverage per institution.</p>
+      </div>
+      <div class="card"><h3>How compound interest works on savings</h3>
+        <p>Interest on savings is typically calculated daily and paid monthly. When that interest is added to your balance and earns further interest, the growth accelerates — this is compounding. Most accounts in Australia compound monthly.</p>
+        <div class="kn-grid mt-16">
+          <div class="kn"><span class="kn-num">$10K</span><span class="kn-desc">at 4% p.a. simple interest = $14,000 after 10 years</span></div>
+          <div class="kn"><span class="kn-num">$10K</span><span class="kn-desc">at 4% p.a. compound (monthly) = approx $14,908 after 10 years</span></div>
+          <div class="kn"><span class="kn-num">Diff</span><span class="kn-desc">Compounding adds $908 — and grows more dramatically over longer timeframes</span></div>
+        </div>
+      </div>
+      <h3 class="mb-16">Common banking questions</h3>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">Bank vs building society vs credit union — what's the difference?<span class="chevron">▾</span></button><div class="acc-body"><p>All three are APRA-regulated ADIs covered by the FCS. Banks are shareholder-owned. Building societies and credit unions are member-owned mutuals — members are part-owners. Because mutuals don't pay dividends to external shareholders, they sometimes offer more competitive rates or lower fees, though this varies. All offer comparable AFSL-regulated deposit products.</p></div></div>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">What fees should I look out for?<span class="chevron">▾</span></button><div class="acc-body"><ul><li><strong>Monthly account-keeping fees</strong> — often waived with a minimum deposit. Fee-free options are widely available.</li><li><strong>ATM withdrawal fees</strong> — using an out-of-network ATM can attract a fee. Eftpos cash-out at supermarkets is typically free.</li><li><strong>International transaction fees</strong> — typically 2–3% on purchases in foreign currencies. Some accounts waive these.</li><li><strong>Dishonour fees</strong> — charged when a direct debit fails due to insufficient funds.</li><li><strong>Term deposit break fees</strong> — breaking a term deposit early typically reduces the interest rate earned or attracts a penalty.</li></ul></div></div>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-nav"><div class="sidebar-nav-title">Related topics</div>
+        <div class="sidebar-nav-item" onclick="showPage('budget')"><div class="si">💰</div>Budget Planner</div>
+        <div class="sidebar-nav-item" onclick="showPage('debt')"><div class="si">💳</div>Borrowing &amp; Debt</div>
+        <div class="sidebar-nav-item" onclick="showPage('property')"><div class="si">🏠</div>Offset Accounts &amp; Mortgages</div>
+        <div class="sidebar-nav-item" onclick="showPage('investing')"><div class="si">📈</div>Beyond Savings: Investing</div>
+      </div>
+      <div class="sidebar-promo"><span class="sidebar-promo-label">Key protection</span><h4>$250,000 FCS guarantee</h4><p>The Australian Government guarantees deposits up to $250,000 per account holder per ADI under the Financial Claims Scheme.</p></div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- ════════════════════════════════════════════════ DEBT PAGE -->
+<div class="page" id="page-debt">
+  <div class="page-banner"><div class="container">
+    <div class="breadcrumb"><span onclick="goHome()">Home</span><span class="sep">›</span><span>Debt</span></div>
+    <div class="page-banner-inner"><div class="page-banner-icon bg-red">💳</div><div><h1>Borrowing &amp; Debt</h1><p>Credit scores, loan types, and getting debt under control.</p></div></div>
+  </div></div>
+  <div class="page-body"><div class="container"><div class="two-col">
+    <div>
+      <div class="card"><h3>How credit scores work in Australia</h3>
+        <p>A credit score is a number representing your creditworthiness based on your credit history, maintained by three bureaus: <strong style="color:var(--text-primary);">Equifax</strong>, <strong style="color:var(--text-primary);">Experian</strong>, and <strong style="color:var(--text-primary);">illion</strong>. Since 2018, Australia uses Comprehensive Credit Reporting (CCR) — meaning both positive (on-time payments) and negative (defaults, missed payments) information is reported. You're entitled to a free report from each bureau every three months.</p>
+        <div class="kn-grid mt-16">
+          <div class="kn"><span class="kn-num">0–549</span><span class="kn-desc">Below average — higher perceived risk</span></div>
+          <div class="kn"><span class="kn-num">550–699</span><span class="kn-desc">Average — some lenders charge more</span></div>
+          <div class="kn"><span class="kn-num">700+</span><span class="kn-desc">Good to excellent — better credit access</span></div>
+        </div>
+      </div>
+      <div class="card"><h3>Types of debt</h3>
+        <table class="tbl"><tr><th>Type</th><th>Typical rate</th><th>Secured?</th></tr>
+        <tr><td>Home loan</td><td>Variable, near RBA rate</td><td class="pos">Yes — property</td></tr>
+        <tr><td>Car loan</td><td>Varies widely</td><td>Usually yes</td></tr>
+        <tr><td>Personal loan</td><td>Higher than home loans</td><td>Can be either</td></tr>
+        <tr><td>Credit card</td><td class="neg">Often 18–24%+ p.a.</td><td class="neg">No</td></tr>
+        <tr><td>BNPL</td><td>No interest (fees apply)</td><td class="neg">No</td></tr>
+        <tr><td>HECS-HELP</td><td>CPI indexation only</td><td class="neg">No</td></tr></table>
+      </div>
+      <div class="card"><h3>Debt repayment approaches</h3>
+        <div class="gaw"><span class="gaw-label">⚠️ General Advice Warning</span><p>General in nature. Does not consider your personal objectives, financial situation, or needs. Consider whether appropriate for your circumstances before acting.</p></div>
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab('debt-t','av',this)">Avalanche method</button>
+          <button class="tab-btn" onclick="switchTab('debt-t','sb',this)">Snowball method</button>
+        </div>
+        <div id="debt-t">
+          <div class="tab-content active" id="tab-av"><p>Directs extra repayments to the <strong style="color:var(--text-primary);">highest interest rate debt first</strong>, while paying minimums on all others. Mathematically minimises total interest paid and is the fastest path to being debt-free. Works best when staying motivated by seeing the numbers improve rather than needing debts to disappear individually.</p></div>
+          <div class="tab-content" id="tab-sb"><p>Directs extra repayments to the <strong style="color:var(--text-primary);">smallest balance first</strong>, regardless of rate. Each cleared debt frees up repayments that roll to the next smallest. Behavioural finance research suggests the psychological boost of eliminating debts can improve long-term follow-through — even if the avalanche is mathematically superior. Neither is universally "better."</p></div>
+        </div>
+        <div class="tip mt-16"><strong>💡 Any extra repayment helps</strong><p>On a credit card at 20% p.a. with a $5,000 balance, paying only the minimum can take over 20 years. An extra $50–$100 per month dramatically reduces total interest and time to clear.</p></div>
+      </div>
+      <div class="free-bar">
+        <div class="free-bar-text"><h4>Free debt support in Australia</h4><p>If debt repayments are becoming unmanageable, free professional help exists.</p></div>
+        <div class="free-links">
+          <div class="free-link">📞 Debt Helpline: 1800 007 007</div>
+          <div class="free-link">🏛️ Centrelink FIS: 132 300</div>
+          <div class="free-link">📋 AFCA: afca.org.au</div>
+        </div>
+      </div>
+      <!-- REFERRAL CTA: Personal / Car / Boat Loans -->
+      <div class="rcta rcta-green">
+        <div class="rcta-inner">
+          <div class="rcta-icon bg-green">🚗</div>
+          <div class="rcta-body">
+            <span class="rcta-eyebrow">Finance options</span>
+            <h4>Looking to finance a car, boat or personal purchase?</h4>
+            <div class="rcta-chips">
+              <span class="rcta-chip">🚗 Car loans</span>
+              <span class="rcta-chip">⛵ Boat loans</span>
+              <span class="rcta-chip">💳 Personal loans</span>
+            </div>
+            <p class="rcta-desc">Understanding your options is the first step — and you've already done that. If you're ready to explore finance, Finfo works with a panel of lenders to help find a loan that suits your situation. No obligation, no pressure.</p>
+            <div class="rcta-actions">
+              <button class="rcta-btn" onclick="openModal('Car, Boat &amp; Personal Loans','🚗','bg-green','Finance referral')">Enquire about finance →</button>
+              <span class="rcta-disclosure">Finfo may receive a referral fee if you proceed with a lender through this service. This doesn't influence the information on this page. <a href="#">Learn more</a>.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-nav"><div class="sidebar-nav-title">Related topics</div>
+        <div class="sidebar-nav-item" onclick="showPage('budget')"><div class="si">💰</div>Budget Planner</div>
+        <div class="sidebar-nav-item" onclick="showPage('property')"><div class="si">🏠</div>Home Loans</div>
+        <div class="sidebar-nav-item" onclick="showPage('banking')"><div class="si">🏦</div>Banking</div>
+        <div class="sidebar-nav-item" onclick="showPage('safety')"><div class="si">✅</div>Get Free Help</div>
+      </div>
+      <div class="sidebar-promo"><span class="sidebar-promo-label">Key fact</span><h4>Check your credit report free</h4><p>You're entitled to a free credit report from Equifax, Experian, and illion every 3 months — no credit check required.</p></div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- ════════════════════════════════════════════════ PROPERTY PAGE -->
+<div class="page" id="page-property">
+  <div class="page-banner"><div class="container">
+    <div class="breadcrumb"><span onclick="goHome()">Home</span><span class="sep">›</span><span>Property</span></div>
+    <div class="page-banner-inner"><div class="page-banner-icon bg-amber">🏠</div><div><h1>Home Loans &amp; Property</h1><p>Mortgages, first home buyer schemes, and investment property basics.</p></div></div>
+  </div></div>
+  <div class="page-body"><div class="container"><div class="two-col">
+    <div>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('prop-t','ph',this)">Home buying</button>
+        <button class="tab-btn" onclick="switchTab('prop-t','pm',this)">Mortgages</button>
+        <button class="tab-btn" onclick="switchTab('prop-t','pfh',this)">First home buyer</button>
+        <button class="tab-btn" onclick="switchTab('prop-t','pi',this)">Investment</button>
+      </div>
+      <div id="prop-t">
+        <div class="tab-content active" id="tab-ph">
+          <div class="card"><h3>The home buying process</h3>
+            <p>Stamp duty, cooling-off periods, and first home buyer grants differ by state — the general process applies broadly across Australia.</p>
+            <div style="margin-top:16px;">
+            <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">1. Determine borrowing capacity &amp; get pre-approval<span class="chevron">▾</span></button><div class="acc-body"><p>Before searching, most buyers seek pre-approval (conditional approval) from a lender. This assesses income, expenses, credit history, and existing debts. Pre-approval gives a borrowing capacity guide — not a guarantee. APRA requires lenders to assess your ability to service the loan at 3% above the current rate (the serviceability buffer).</p></div></div>
+            <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">2. Save your deposit &amp; account for upfront costs<span class="chevron">▾</span></button><div class="acc-body"><p>Most lenders require 5–20% deposit. Below 20% generally triggers LMI. Budget for: stamp duty (check your state revenue office for current rates), legal/conveyancing fees ($800–$2,000+), building and pest inspections ($400–$800), and loan application fees.</p></div></div>
+            <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">3. Search, inspect, and make an offer<span class="chevron">▾</span></button><div class="acc-body"><p>Properties sell by private treaty (negotiation) or auction. Auction contracts are unconditional — no cooling-off period. Private treaty usually includes a cooling-off period (length varies by state). Always get a building and pest inspection on older properties. A solicitor or conveyancer reviews contracts before you sign.</p></div></div>
+            <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">4. Exchange and settlement<span class="chevron">▾</span></button><div class="acc-body"><p>Exchange creates a binding agreement. A deposit (typically 10%) is held in trust until settlement — usually 4–6 weeks after exchange. At settlement, the balance is paid, title transfers, and keys are handed over. Your lender's funds are drawn down at this point.</p></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-content" id="tab-pm">
+          <div class="card"><h3>Fixed vs variable interest rates</h3>
+            <div class="gaw"><span class="gaw-label">⚠️ General Advice Warning</span><p>General in nature. Does not consider your personal objectives, financial situation, or needs. Seek advice where appropriate.</p></div>
+            <table class="tbl"><tr><th>Feature</th><th>Fixed</th><th>Variable</th></tr>
+            <tr><td>Rate certainty</td><td class="pos">Set for term (1–5 yrs)</td><td>Can change with RBA</td></tr>
+            <tr><td>Extra repayments</td><td class="neg">Often limited</td><td class="pos">Usually unlimited</td></tr>
+            <tr><td>Offset account</td><td class="neg">Usually unavailable</td><td class="pos">Commonly available</td></tr>
+            <tr><td>Break costs</td><td class="neg">Can be substantial</td><td class="pos">None</td></tr></table>
+            <p class="mt-16">Split loans fix a portion while keeping the rest variable — providing some repayment certainty while retaining offset and extra-repayment flexibility.</p>
+          </div>
+          <div class="card"><h3>LVR &amp; Lenders Mortgage Insurance (LMI)</h3>
+            <p>Loan-to-Value Ratio (LVR) is the loan as a percentage of property value. Borrowing $450K on a $500K property = 90% LVR. When LVR exceeds 80%, most lenders require LMI — a one-off premium that protects the <em>lender</em> (not you) against default risk. LMI can range from thousands to tens of thousands depending on loan size and LVR. Options to avoid it include a 20%+ deposit, a guarantor, or eligible government schemes.</p>
+          </div>
+          <!-- Mortgage calculator -->
+          <div class="mortgage-widget mt-16">
+            <div class="mw-head"><h3>Mortgage Repayment Calculator</h3><p>General estimate only — not a credit quote. Actual repayments depend on lender assessment, fees, and rate changes.</p></div>
+            <div class="mw-body">
+              <div class="mw-row"><div class="mw-label"><span>Loan amount</span><span id="mw-loan-v">$600,000</span></div><input type="range" min="100000" max="2000000" step="10000" value="600000" id="mw-loan" oninput="calcMortgage()"></div>
+              <div class="mw-row"><div class="mw-label"><span>Interest rate (p.a.)</span><span id="mw-rate-v">6.0%</span></div><input type="range" min="2" max="12" step="0.1" value="6.0" id="mw-rate" oninput="calcMortgage()"></div>
+              <div class="mw-row"><div class="mw-label"><span>Loan term</span><span id="mw-term-v">30 years</span></div><input type="range" min="5" max="30" step="1" value="30" id="mw-term" oninput="calcMortgage()"></div>
+              <div class="mw-result">
+                <div class="rl">Estimated monthly repayment</div>
+                <span class="rv" id="mw-monthly">$3,597</span>
+                <div class="rs" id="mw-sub">P&amp;I over 30 years</div>
+                <div class="mw-breakdown">
+                  <div class="mw-b"><span>Total repaid</span><span id="mw-total">$1,295K</span></div>
+                  <div class="mw-b"><span>Total interest</span><span id="mw-interest">$695K</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <!-- REFERRAL CTA: Home Loans -->
+      <div class="rcta rcta-amber">
+        <div class="rcta-inner">
+          <div class="rcta-icon bg-amber">🏠</div>
+          <div class="rcta-body">
+            <span class="rcta-eyebrow">Home loan referral</span>
+            <h4>Ready to speak with a mortgage specialist?</h4>
+            <div class="rcta-chips">
+              <span class="rcta-chip">🏠 First home buyers</span>
+              <span class="rcta-chip">🔄 Refinancing</span>
+              <span class="rcta-chip">📦 Investment loans</span>
+            </div>
+            <p class="rcta-desc">The numbers above are a guide. A broker can assess your actual borrowing capacity, compare loans across multiple lenders, and handle the paperwork — often at no cost to you. Finfo can connect you with a qualified mortgage specialist.</p>
+            <div class="rcta-actions">
+              <button class="rcta-btn" onclick="openModal('Home Loan Referral','🏠','bg-amber','Mortgage referral')">Connect with a broker →</button>
+              <span class="rcta-disclosure">Finfo may receive a referral fee from our partner broker if you proceed. This does not affect the information on this page. <a href="#">Learn more</a>.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+        <div class="tab-content" id="tab-pfh">
+          <div class="card"><h3>First Home Buyer schemes</h3><p>Eligibility, caps, and availability change — verify current details with the relevant government agency before relying on any scheme.</p></div>
+          <div class="info-alert"><strong>Schemes change — verify always</strong><p>Government scheme caps, income thresholds, and grant amounts are updated regularly. Check housingaustralia.gov.au, your state revenue office, and ato.gov.au before making financial decisions based on a scheme's availability.</p></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">First Home Guarantee (FHBG)<span class="chevron">▾</span></button><div class="acc-body"><p>Allows eligible first home buyers to purchase with as little as a 5% deposit without paying LMI. The government guarantees up to 15% of the loan. Places are limited each financial year and property price caps apply by location and metro/regional classification. Administered through Housing Australia (housingaustralia.gov.au) and participating lenders.</p></div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">First Home Super Saver Scheme (FHSS)<span class="chevron">▾</span></button><div class="acc-body"><p>Allows first home buyers to make voluntary super contributions and later withdraw them (plus associated earnings) for a home deposit. Concessional contributions are taxed at 15% inside super. At withdrawal, concessional contributions and earnings are taxed at your marginal rate less a 30% offset. Applications must go through the ATO before signing a contract. Verify current annual release limits at ato.gov.au.</p></div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">Stamp duty concessions<span class="chevron">▾</span></button><div class="acc-body"><p>Each state and territory offers different stamp duty (transfer duty) concessions or exemptions for first home buyers — ranging from full exemptions below certain price thresholds to partial concessions. Check your state revenue office for current thresholds, as these are updated periodically and vary by property type (new vs established) and location.</p></div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">First Home Owner Grant (FHOG)<span class="chevron">▾</span></button><div class="acc-body"><p>A state and territory government grant for eligible first home buyers purchasing or building new homes. Amounts typically range from $10,000 to $30,000 depending on state — conditions include new construction requirements, price caps, and residency obligations. Apply through your lender or state revenue office. Availability varies by state; verify current amounts for your state.</p></div></div>
+        </div>
+        <div class="tab-content" id="tab-pi">
+          <div class="card"><h3>Investment property concepts</h3>
+            <div class="gaw"><span class="gaw-label">⚠️ General Advice Warning</span><p>General in nature. Property investment involves significant risk. Does not consider your personal objectives, financial situation, or needs. Seek advice from a licensed financial adviser.</p></div>
+          </div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">Negative gearing — what it means<span class="chevron">▾</span></button><div class="acc-body"><p>Negative gearing occurs when property costs (interest, rates, insurance, management, depreciation) exceed rental income. The net loss can generally be offset against other taxable income — reducing income tax payable. It makes financial sense only when anticipated capital growth is expected to more than offset the ongoing cash shortfall. Capital growth is uncertain and is not guaranteed.</p></div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">Capital gains and the CGT discount<span class="chevron">▾</span></button><div class="acc-body"><p>When an investment property is sold for more than its cost base, a CGT event occurs. Individuals holding a property for more than 12 months qualify for the 50% CGT discount — only half the net capital gain is added to taxable income. Tax payable depends on the individual's marginal rate at the time of sale. The cost base includes purchase costs and eligible capital improvements.</p></div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">Property depreciation<span class="chevron">▾</span></button><div class="acc-body"><p>Investors can claim depreciation on depreciating assets (appliances, carpet, fixtures) and, for qualifying buildings, on the structure (Division 43 — building allowance). A Quantity Surveyor prepares a Tax Depreciation Schedule. These are non-cash deductions — no actual cash outlay, but they reduce taxable income. Eligibility rules have changed over time; verify current eligibility with a tax professional.</p></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-nav"><div class="sidebar-nav-title">Quick tools</div>
+        <div class="sidebar-nav-item" onclick="showPage('property');switchTab('prop-t','pm',null)"><div class="si">🧮</div>Mortgage Calculator</div>
+        <div class="sidebar-nav-item" onclick="showPage('budget')"><div class="si">💰</div>Budget Planner</div>
+      </div>
+      <div class="sidebar-nav" style="margin-top:16px;"><div class="sidebar-nav-title">Related</div>
+        <div class="sidebar-nav-item" onclick="showPage('debt')"><div class="si">💳</div>Borrowing &amp; Debt</div>
+        <div class="sidebar-nav-item" onclick="showPage('super')"><div class="si">🔒</div>FHSS Super Scheme</div>
+        <div class="sidebar-nav-item" onclick="showPage('investing')"><div class="si">📈</div>Property vs Shares</div>
+      </div>
+      <div class="sidebar-promo mt-16"><span class="sidebar-promo-label">Government resource</span><h4>moneysmart.gov.au</h4><p>ASIC's free mortgage calculator, borrowing power calculator, and home buying guide.</p></div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- ════════════════════════════════════════════════ INVESTING PAGE -->
+<div class="page" id="page-investing">
+  <div class="page-banner"><div class="container">
+    <div class="breadcrumb"><span onclick="goHome()">Home</span><span class="sep">›</span><span>Investing</span></div>
+    <div class="page-banner-inner"><div class="page-banner-icon bg-blue">📈</div><div><h1>Investing</h1><p>Shares, ETFs, crypto, managed funds, and how money compounds over time.</p></div></div>
+  </div></div>
+  <div class="page-body"><div class="container"><div class="two-col">
+    <div>
+      <div class="card"><h3>The four main asset classes</h3>
+        <div class="cg mt-16">
+          <div class="cg-card"><div class="cg-icon">💵</div><h4>Cash &amp; deposits</h4><p>Bank accounts, term deposits. Low risk, low return, high liquidity. Protected by the FCS up to $250,000 per ADI.</p></div>
+          <div class="cg-card"><div class="cg-icon">📋</div><h4>Fixed income / bonds</h4><p>Government and corporate bonds. Regular interest, capital at maturity. Credit risk varies by issuer.</p></div>
+          <div class="cg-card"><div class="cg-icon">🏠</div><h4>Property</h4><p>Direct real estate or listed REITs. Rental income plus potential capital growth. Less liquid than shares.</p></div>
+          <div class="cg-card"><div class="cg-icon">📊</div><h4>Shares / equities</h4><p>Ownership in listed companies. Higher long-term return potential with higher short-term volatility. Returns via dividends and capital growth.</p></div>
+        </div>
+      </div>
+      <div class="card"><h3>Shares, ETFs &amp; managed funds</h3>
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab('inv-t','ds',this)">Direct shares</button>
+          <button class="tab-btn" onclick="switchTab('inv-t','etf',this)">ETFs</button>
+          <button class="tab-btn" onclick="switchTab('inv-t','mf',this)">Managed funds</button>
+        </div>
+        <div id="inv-t">
+          <div class="tab-content active" id="tab-ds"><p><strong style="color:var(--text-primary);">Direct shares</strong> are equity stakes in individual companies traded on the ASX through a broker or online platform. Returns come from dividends and capital gains. Concentration risk is higher — one company's performance significantly affects your outcome. Australian companies often pay franked dividends carrying imputation credits that can reduce the investor's tax liability.</p></div>
+          <div class="tab-content" id="tab-etf"><p><strong style="color:var(--text-primary);">Exchange-Traded Funds (ETFs)</strong> trade on the ASX and most track an index — such as the ASX 200 or S&amp;P 500. They provide instant diversification across many companies. Management fees (MER) for index ETFs are typically low — often 0.03–0.5% p.a. — because the fund replicates an index rather than paying analysts. ETFs can cover bonds, property, commodities, specific sectors, or geographic markets. They trade throughout the ASX day, unlike traditional managed funds which price once daily.</p></div>
+          <div class="tab-content" id="tab-mf"><p><strong style="color:var(--text-primary);">Managed funds (unit trusts)</strong> pool investors' money under a professional manager. They typically price and transact once daily. Fees are generally higher than index ETFs. <strong style="color:var(--text-primary);">Listed Investment Companies (LICs)</strong> and <strong style="color:var(--text-primary);">Listed Investment Trusts (LITs)</strong> trade on the ASX and can trade at a premium or discount to their underlying Net Asset Value (NAV) — adding market price dynamics beyond the underlying portfolio.</p></div>
+        </div>
+      </div>
+      <div class="card"><h3>Compounding — the effect of time</h3>
+        <p>Compounding means returns earned on an investment generate further returns. The longer the time period and the higher the return, the more dramatic the effect.</p>
+        <div class="kn-grid mt-16">
+          <div class="kn"><span class="kn-num">$10K</span><span class="kn-desc">at 7% p.a. for 10 years = approx $19,700</span></div>
+          <div class="kn"><span class="kn-num">$10K</span><span class="kn-desc">at 7% p.a. for 20 years = approx $38,700</span></div>
+          <div class="kn"><span class="kn-num">$10K</span><span class="kn-desc">at 7% p.a. for 30 years = approx $76,100</span></div>
+        </div>
+        <p class="mt-16">These are illustrative. Real returns vary and are not guaranteed. Fees reduce the net return and compound in the same way — a 1% difference in annual fees has a meaningful impact over 20–30 years.</p>
+        <div class="tip mt-16"><strong>💡 Dollar cost averaging</strong><p>Investing a fixed amount at regular intervals (monthly, fortnightly) rather than a lump sum means you buy more units when prices are low and fewer when high — reducing the average cost per unit over time and removing the pressure of timing the market.</p></div>
+      </div>
+      <div class="card"><h3>Cryptocurrency</h3>
+        <div class="gaw"><span class="gaw-label">⚠️ General Advice Warning</span><p>Cryptocurrency markets are highly volatile and speculative. General in nature. Does not consider your objectives, financial situation, or needs. Consider your circumstances carefully.</p></div>
+        <p>Cryptocurrency is a digital asset on decentralised blockchain networks. Key points: extreme volatility (50–80% drawdowns occur); no FCS protection; ATO treats crypto as a CGT asset (every disposal is a CGT event requiring detailed records); and it is the dominant vehicle for investment scams in Australia. Consult ato.gov.au for tax guidance and ASIC Moneysmart's "Stop. Think. Protect." resources before investing.</p>
+      </div>
+      <!-- REFERRAL CTA: Accountant / Adviser — Investing page -->
+      <div class="rcta rcta-purple">
+        <div class="rcta-inner">
+          <div class="rcta-icon bg-purple">🧑‍💼</div>
+          <div class="rcta-body">
+            <span class="rcta-eyebrow">Accountant &amp; adviser referral</span>
+            <h4>Need a second opinion from a qualified professional?</h4>
+            <div class="rcta-chips">
+              <span class="rcta-chip">📈 Investment strategy</span>
+              <span class="rcta-chip">💰 Tax planning</span>
+              <span class="rcta-chip">🏦 Portfolio structure</span>
+            </div>
+            <p class="rcta-desc">General information can take you a long way — but when you're making significant investment decisions, a qualified second opinion is worth having. Finfo can connect you with a licensed adviser or accountant from our national network.</p>
+            <div class="rcta-actions">
+              <button class="rcta-btn" onclick="openModal('Accountant &amp; Adviser — Investing','🧑‍💼','bg-purple','Adviser referral')">Connect with a specialist →</button>
+              <span class="rcta-disclosure">Finfo facilitates introductions to qualified professionals in our network. We may receive a referral fee if you engage a professional through this service. <a href="#">Learn more</a>.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-nav"><div class="sidebar-nav-title">Related topics</div>
+        <div class="sidebar-nav-item" onclick="showPage('super')"><div class="si">🔒</div>Super investment options</div>
+        <div class="sidebar-nav-item" onclick="showPage('property')"><div class="si">🏠</div>Property as investment</div>
+        <div class="sidebar-nav-item" onclick="showPage('safety')"><div class="si">✅</div>Spot investment scams</div>
+        <div class="sidebar-nav-item" onclick="showPage('debt')"><div class="si">💳</div>Investing vs debt repayment</div>
+      </div>
+      <div class="sidebar-promo mt-16"><span class="sidebar-promo-label">Key principle</span><h4>Diversification</h4><p>Spreading investments across asset classes, geographies, and sectors reduces the impact of any single holding performing poorly. It manages risk — it doesn't eliminate it.</p></div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- ════════════════════════════════════════════════ SUPER PAGE -->
+<div class="page" id="page-super">
+  <div class="page-banner"><div class="container">
+    <div class="breadcrumb"><span onclick="goHome()">Home</span><span class="sep">›</span><span>Super</span></div>
+    <div class="page-banner-inner"><div class="page-banner-icon bg-purple">🔒</div><div><h1>Super &amp; Retirement</h1><p>How superannuation works, contributions, SMSFs, and retirement income.</p></div></div>
+  </div></div>
+  <div class="page-body"><div class="container"><div class="two-col">
+    <div>
+      <div class="card"><h3>Superannuation — Australia's retirement system</h3>
+        <p>Superannuation is a tax-advantaged savings structure for retirement. Employers are required to contribute a percentage of eligible employees' ordinary time earnings — the Superannuation Guarantee (SG). The SG rate is legislated at 12% p.a. from 1 July 2025 — verify current rate at ato.gov.au. Money in super is generally preserved until you meet a condition of release and cannot be accessed for everyday spending.</p>
+      </div>
+      <div class="card"><h3>How super is taxed</h3>
+        <ul>
+          <li><strong style="color:var(--text-primary);">Contributions tax:</strong> concessional contributions (employer SG, salary sacrifice, personal deductible) are taxed at a flat 15% — lower than most marginal rates. High earners above $250,000 income pay an additional 15% (Division 293).</li>
+          <li><strong style="color:var(--text-primary);">Earnings tax:</strong> investment earnings during accumulation are taxed at a maximum of 15%.</li>
+          <li><strong style="color:var(--text-primary);">Pension phase:</strong> assets supporting an account-based pension generate tax-free earnings up to the Transfer Balance Cap (currently $1.9m — verify at ato.gov.au).</li>
+          <li><strong style="color:var(--text-primary);">At retirement:</strong> benefits from a taxed super fund are tax-free for members aged 60 and over.</li>
+        </ul>
+        <div class="info-alert mt-16"><strong>Rates and caps change — always verify</strong><p>The SG rate, concessional contribution cap, non-concessional cap, and Transfer Balance Cap are adjusted over time. Verify current figures at ato.gov.au before making decisions.</p></div>
+      </div>
+      <div class="card"><h3>Contribution types</h3>
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab('sup-t','cc',this)">Concessional</button>
+          <button class="tab-btn" onclick="switchTab('sup-t','nc',this)">Non-concessional</button>
+          <button class="tab-btn" onclick="switchTab('sup-t','gc',this)">Co-contribution</button>
+        </div>
+        <div id="sup-t">
+          <div class="tab-content active" id="tab-cc"><p>Made from pre-tax income — employer SG, salary sacrifice, and personal deductible contributions. Taxed at 15% inside the fund. An annual cap applies (verify current cap with ATO). Unused concessional cap can be carried forward up to 5 years if your Total Super Balance was below $500,000 at 30 June of the prior year — enabling catch-up contributions.</p></div>
+          <div class="tab-content" id="tab-nc"><p>Made from after-tax money — already subject to income tax. No tax on entry to the fund. Earnings inside super still taxed at 15% in accumulation phase. An annual NCC cap applies (verify with ATO). The bring-forward rule allows eligible members under 75 to bring forward up to three years of NCC cap in a single year. NCC eligibility phases out as Total Super Balance approaches legislated thresholds.</p></div>
+          <div class="tab-content" id="tab-gc"><p>Lower and middle income earners who make personal after-tax super contributions can receive a matching government co-contribution — up to $500 per year. The co-contribution phases out as income rises. Both income and contribution thresholds are indexed — verify current eligibility at ato.gov.au.</p></div>
+        </div>
+      </div>
+      <div class="card"><h3>SMSFs — Self-Managed Super Funds</h3>
+        <div class="gaw"><span class="gaw-label">⚠️ General Advice Warning</span><p>General in nature. SMSFs involve significant trustee responsibilities and legal obligations. Seek advice from a licensed financial adviser with SMSF authorisation and your accountant before establishing or joining an SMSF.</p></div>
+        <p>An SMSF is a super fund with up to 6 members who are also the trustees. Regulated by the ATO (not APRA). Offers greater investment flexibility — including direct property and specific shares — but transfers full trustee duties and personal legal liability onto the members.</p>
+        <p class="mt-12">ASIC's Information Sheet 274 suggests funds below $200,000 may not be cost-competitive on fees, though this depends on strategy and complexity. The Sole Purpose Test (SIS Act s62) is the most important compliance rule — the fund must be maintained solely for retirement purposes. Any present-day benefit to members from fund assets (living in a fund property, using fund-owned art at home) is a breach.</p>
+        <div class="tip mt-16"><strong>💡 SMSF advice needs a specific authorisation</strong><p>Not all licensed financial advisers are authorised to provide SMSF advice. When searching the ASIC Financial Advisers Register, look for SMSF authorisation specifically.</p></div>
+      </div>
+      <!-- REFERRAL CTA: Accountant / Adviser -->
+      <div class="rcta rcta-purple">
+        <div class="rcta-inner">
+          <div class="rcta-icon bg-purple">🧑‍💼</div>
+          <div class="rcta-body">
+            <span class="rcta-eyebrow">SMSF & tax specialist referral</span>
+            <h4>Need to speak with a qualified professional?</h4>
+            <div class="rcta-chips">
+              <span class="rcta-chip">🧾 SMSF setup</span>
+              <span class="rcta-chip">📊 Tax strategy</span>
+              <span class="rcta-chip">📋 Compliance reviews</span>
+            </div>
+            <p class="rcta-desc">Setting up or reviewing an SMSF involves trustee obligations, tax strategy, and compliance that go beyond general information. Finfo has a national network of qualified accountants and licensed financial advisers who specialise in SMSFs and can work with you directly.</p>
+            <div class="rcta-actions">
+              <button class="rcta-btn" onclick="openModal('SMSF &amp; Tax Specialist','🧑‍💼','bg-purple','SMSF referral')">Connect with a specialist →</button>
+              <span class="rcta-disclosure">Finfo facilitates introductions to qualified professionals in our network. We may receive a referral fee if you engage a professional through this service. <a href="#">Learn more</a>.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-nav"><div class="sidebar-nav-title">Super resources</div>
+        <div class="sidebar-nav-item"><div class="si">🏛️</div>ato.gov.au/super</div>
+        <div class="sidebar-nav-item"><div class="si">🔍</div>moneysmart.gov.au/super</div>
+        <div class="sidebar-nav-item"><div class="si">📞</div>Your super fund (free advice)</div>
+        <div class="sidebar-nav-item"><div class="si">🏛️</div>Centrelink FIS: 132 300</div>
+      </div>
+      <div class="sidebar-promo mt-16"><span class="sidebar-promo-label">Free advice</span><h4>Your super fund can help — for free</h4><p>Most super funds provide free intra-fund advice on contributions, investment options, and insurance inside super. Call and ask. Massively underused.</p></div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- ════════════════════════════════════════════════ INSURANCE PAGE -->
+<div class="page" id="page-insurance">
+  <div class="page-banner"><div class="container">
+    <div class="breadcrumb"><span onclick="goHome()">Home</span><span class="sep">›</span><span>Insurance</span></div>
+    <div class="page-banner-inner"><div class="page-banner-icon bg-cyan">🛡️</div><div><h1>Insurance &amp; Protection</h1><p>Life, income protection, health, and general insurance explained.</p></div></div>
+  </div></div>
+  <div class="page-body"><div class="container"><div class="two-col">
+    <div>
+      <div class="card"><h3>Personal insurance — the four main types</h3></div>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">Life (death) insurance<span class="chevron">▾</span></button><div class="acc-body"><p>Pays a lump sum to beneficiaries on death. Designed to replace the financial support you would have provided — particularly relevant with dependants, a mortgage, or debts. Can be held inside super (premiums from super balance — potentially tax-effective but reduces retirement savings) or outside super (premiums from personal cash flow, benefits paid directly to beneficiary).</p></div></div>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">Total and Permanent Disability (TPD)<span class="chevron">▾</span></button><div class="acc-body"><p>Pays a lump sum if you become totally and permanently disabled. The definition matters significantly: <strong>Own occupation</strong> — cannot perform your specific job (broader, higher cost, not available inside super). <strong>Any occupation</strong> — cannot perform any occupation suited to your education/experience (narrower, lower cost, commonly inside super). Check your existing super fund policy to understand which definition applies to your default cover.</p></div></div>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">Income protection insurance<span class="chevron">▾</span></button><div class="acc-body"><p>Pays a monthly benefit — typically 70–75% of pre-disability income — if you cannot work due to sickness or injury. Key features: <strong>Waiting period</strong> — 14/30/60/90 days before benefits start (longer = lower premium). <strong>Benefit period</strong> — 2 years, 5 years, or to age 65. <strong>Indemnity basis</strong> — APRA changes from 2021 effectively ended agreed value policies; current IP policies are indemnity-based (benefit reflects income at claim time, not when policy was taken out).</p></div></div>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)">Trauma / critical illness insurance<span class="chevron">▾</span></button><div class="acc-body"><p>Pays a lump sum on diagnosis of a specified critical illness (cancer, heart attack, stroke, organ failure) — even if you continue working or recover. Designed to cover medical costs, rehabilitation, and lifestyle adjustments. Generally only available outside super. The list of covered conditions and how they are defined varies between policies and significantly affects value.</p></div></div>
+      <div class="card mt-8"><h3>Inside vs outside super</h3>
+        <table class="tbl"><tr><th>Feature</th><th>Inside super</th><th>Outside super</th></tr>
+        <tr><td>Life &amp; TPD</td><td class="pos">Available</td><td class="pos">Available</td></tr>
+        <tr><td>Trauma cover</td><td class="neg">Generally no</td><td class="pos">Yes</td></tr>
+        <tr><td>Income protection</td><td>Limited terms</td><td class="pos">Fuller terms</td></tr>
+        <tr><td>Premium tax</td><td class="pos">Paid from 15% super env.</td><td>After-tax income</td></tr>
+        <tr><td>Death benefit path</td><td class="neg">Via super estate</td><td class="pos">Direct to beneficiary</td></tr></table>
+        <div class="gaw mt-16"><span class="gaw-label">⚠️ General Advice Warning</span><p>Insurance decisions involve personal health, income, dependants, debts, and tax position. This comparison is general only. Speak with a licensed financial adviser.</p></div>
+      </div>
+
+      <!-- REFERRAL CTA: Insurance -->
+      <div class="rcta rcta-teal">
+        <div class="rcta-inner">
+          <div class="rcta-icon bg-cyan">🛡️</div>
+          <div class="rcta-body">
+            <span class="rcta-eyebrow">Insurance referral</span>
+            <h4>Want to review your cover with a specialist?</h4>
+            <div class="rcta-chips">
+              <span class="rcta-chip">🛡️ Life insurance</span>
+              <span class="rcta-chip">💼 Income protection</span>
+              <span class="rcta-chip">⚡ TPD cover</span>
+              <span class="rcta-chip">❤️ Trauma cover</span>
+            </div>
+            <p class="rcta-desc">Understanding how these products work is one thing — knowing whether your cover is adequate is another. A licensed insurance adviser can review what you currently hold (including inside super) and explain your options. Finfo can make that introduction.</p>
+            <div class="rcta-actions">
+              <button class="rcta-btn" onclick="openModal('Insurance Specialist Referral','🛡️','bg-cyan','Insurance referral')">Request an introduction →</button>
+              <span class="rcta-disclosure">Finfo may receive a referral fee if you proceed with an adviser through this service. This doesn't influence the information on this page. <a href="#">Learn more</a>.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card"><h3>General insurance</h3>
+        <div class="cg">
+          <div class="cg-card"><div class="cg-icon">🏠</div><h4>Home &amp; contents</h4><p>Home covers the building structure; contents covers your possessions. Insure for replacement value — not market value — to avoid underinsurance.</p></div>
+          <div class="cg-card"><div class="cg-icon">🚗</div><h4>Car insurance</h4><p>CTP (compulsory) covers personal injury. Third party property covers damage to others. Comprehensive extends to your own vehicle. CTP is mandatory in all states.</p></div>
+          <div class="cg-card"><div class="cg-icon">💊</div><h4>Private health</h4><p>Hospital cover for in-hospital treatment. Extras for dental, optical, physio. Lifetime Health Cover loading applies if hospital cover isn't held before age 31.</p></div>
+          <div class="cg-card"><div class="cg-icon">✈️</div><h4>Travel insurance</h4><p>Covers medical emergencies, cancellation, and lost luggage. Disclose pre-existing conditions — non-disclosure can void cover at claim time.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-nav"><div class="sidebar-nav-title">Related topics</div>
+        <div class="sidebar-nav-item" onclick="showPage('super')"><div class="si">🔒</div>Insurance inside super</div>
+        <div class="sidebar-nav-item" onclick="showPage('budget')"><div class="si">💰</div>Budgeting for premiums</div>
+        <div class="sidebar-nav-item" onclick="showPage('safety')"><div class="si">✅</div>Duty of disclosure</div>
+      </div>
+      <div class="sidebar-promo mt-16"><span class="sidebar-promo-label">Key gap</span><h4>Underinsurance in Australia</h4><p>Research consistently shows Australians are significantly underinsured — particularly for life, income protection, and TPD. Annual cover reviews are widely recommended.</p></div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- ════════════════════════════════════════════════ SAFETY PAGE -->
+<div class="page" id="page-safety">
+  <div class="page-banner"><div class="container">
+    <div class="breadcrumb"><span onclick="goHome()">Home</span><span class="sep">›</span><span>Stay Safe</span></div>
+    <div class="page-banner-inner"><div class="page-banner-icon bg-orange">✅</div><div><h1>Stay Safe &amp; Get Help</h1><p>Spot scams, verify advisers, and find free financial support.</p></div></div>
+  </div></div>
+  <div class="page-body"><div class="container"><div class="two-col">
+    <div>
+      <div class="card" style="border-color:rgba(192,57,43,.25);">
+        <h3 style="color:var(--red-text);">🚨 Investment scam warning signs</h3>
+        <p>Investment scams are the most costly form of fraud in Australia — Australians lose hundreds of millions annually. Cryptocurrency scams, romance baiting ("pig butchering"), and fake managed investment schemes are most prevalent. Stop if you see any of these:</p>
+        <ul>
+          <li>Guaranteed returns with no risk — this combination does not exist in legitimate investing.</li>
+          <li>Pressure to invest quickly or a "limited time" offer.</li>
+          <li>Someone met online (social media, dating apps) who introduces an investment opportunity.</li>
+          <li>You cannot find the business on ASIC's registers.</li>
+          <li>You're asked to pay taxes or fees before you can withdraw your "profits."</li>
+          <li>You're told not to tell family or a financial adviser about the investment.</li>
+        </ul>
+      </div>
+      <div class="card"><h3>How to verify a financial adviser</h3>
+        <p>Anyone providing personal financial advice in Australia must be on the <strong style="color:var(--text-primary);">ASIC Financial Advisers Register (FAR)</strong>. To check:</p>
+        <ul>
+          <li>Visit moneysmart.gov.au/financial-advisers-register</li>
+          <li>Confirm the registration is current (not suspended or cancelled)</li>
+          <li>Check their authorised AFSL — the licence holder is responsible for the adviser's conduct</li>
+          <li>Confirm product authorisations match what you need (e.g. superannuation, insurance, SMSF)</li>
+        </ul>
+        <div class="tip mt-16"><strong>💡 Always verify directly on the register</strong><p>Scammers sometimes impersonate real AFSL holders. Always check the register directly at asic.gov.au — not via a link provided by the person claiming to be an adviser.</p></div>
+      </div>
+      <!-- REFERRAL CTA: Accountant / Adviser -->
+      <div class="rcta rcta-purple">
+        <div class="rcta-inner">
+          <div class="rcta-icon bg-purple">🧑‍💼</div>
+          <div class="rcta-body">
+            <span class="rcta-eyebrow">Find a qualified professional</span>
+            <h4>Need to speak with a qualified professional?</h4>
+            <div class="rcta-chips">
+              <span class="rcta-chip">📋 Financial planning</span>
+              <span class="rcta-chip">🧾 Tax advice</span>
+              <span class="rcta-chip">📊 Investment strategy</span>
+            </div>
+            <p class="rcta-desc">Sometimes general information isn't enough — your situation is specific and you need someone who knows the full picture. Finfo can connect you with a qualified accountant or licensed financial adviser from our national network, at no cost to you.</p>
+            <div class="rcta-actions">
+              <button class="rcta-btn" onclick="openModal('Accountant &amp; Financial Adviser','🧑‍💼','bg-purple','Adviser referral')">Connect with a specialist →</button>
+              <span class="rcta-disclosure">Finfo facilitates introductions to qualified professionals in our network. We may receive a referral fee if you engage a professional through this service. <a href="#">Learn more</a>.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card"><h3>AFCA — making a complaint</h3>
+        <p>The <strong style="color:var(--text-primary);">Australian Financial Complaints Authority (AFCA)</strong> is the external dispute resolution scheme for financial services complaints — free to consumers. It covers financial products, advice, super, insurance, and banking. You must first complain to the firm directly (Internal Dispute Resolution). If that fails or the firm doesn't respond in time, escalate to AFCA at afca.org.au or 1800 931 678 (free call).</p>
+      </div>
+      <div class="free-bar">
+        <div class="free-bar-text"><h4>Free financial support in Australia</h4><p>These services are government-backed, independent, and free.</p></div>
+        <div class="free-links">
+          <div class="free-link">📞 Debt Helpline: 1800 007 007</div>
+          <div class="free-link">🏛️ Centrelink FIS: 132 300</div>
+          <div class="free-link">📋 AFCA: 1800 931 678</div>
+          <div class="free-link">🚨 Scamwatch: scamwatch.gov.au</div>
+          <div class="free-link">🛡️ ReportCyber: cyber.gov.au</div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-nav"><div class="sidebar-nav-title">Quick checks</div>
+        <div class="sidebar-nav-item"><div class="si">📋</div>ASIC Advisers Register</div>
+        <div class="sidebar-nav-item"><div class="si">🚨</div>Scamwatch: scamwatch.gov.au</div>
+        <div class="sidebar-nav-item"><div class="si">📋</div>AFCA: afca.org.au</div>
+        <div class="sidebar-nav-item"><div class="si">🔍</div>Verify licence: asic.gov.au</div>
+      </div>
+      <div class="sidebar-promo mt-16"><span class="sidebar-promo-label">Red flag</span><h4>Too good to be true</h4><p>Legitimate investments involve real risk and realistic returns. Guaranteed high returns with no risk are not an investment — they are a scam. Walk away.</p></div>
+    </div>
+  </div></div></div>
+</div>
+
+</main>
+
+<!-- ════════════════════════════════════════════════ FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-main">
+      <div class="footer-brand">
+        <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h10M4 12h7M4 17h10" stroke="#C4F23C" stroke-width="2.5" stroke-linecap="round"/><circle cx="19" cy="7" r="2" fill="#C4F23C"/><circle cx="16" cy="14" r="3.5" stroke="#C4F23C" stroke-width="2"/><path d="M19 16.5l2 2" stroke="#C4F23C" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <div class="footer-brand-name">fi<span>nfo</span></div>
+        <p class="footer-tagline">Free, plain-English financial information for everyday Australians. We're not a financial adviser — we're here to help you understand your options.</p>
+      </div>
+      <div class="footer-col"><h5>Topics</h5>
+        <a onclick="showPage('budget')">Budget &amp; Save</a>
+        <a onclick="showPage('banking')">Banking</a>
+        <a onclick="showPage('debt')">Debt</a>
+        <a onclick="showPage('property')">Property</a>
+        <a onclick="showPage('investing')">Investing</a>
+        <a onclick="showPage('super')">Super &amp; Retirement</a>
+        <a onclick="showPage('insurance')">Insurance</a>
+        <a onclick="showPage('safety')">Stay Safe</a>
+      </div>
+      <div class="footer-col"><h5>Tools</h5>
+        <a onclick="showPage('budget')">Budget Planner</a>
+        <a onclick="showPage('property')">Mortgage Calculator</a>
+        <a onclick="goHome()">Savings Goal Planner</a>
+        <a onclick="goHome()">Compound Growth Calculator</a>
+        <a onclick="goHome()">Debt Payoff Estimator</a>
+      </div>
+      <div class="footer-col"><h5>Official resources</h5>
+        <a href="https://moneysmart.gov.au" target="_blank">MoneySmart (ASIC)</a>
+        <a href="https://ato.gov.au/super" target="_blank">ATO — Super &amp; Tax</a>
+        <a href="https://afca.org.au" target="_blank">AFCA — Complaints</a>
+        <a href="https://housingaustralia.gov.au" target="_blank">Housing Australia</a>
+        <a href="https://scamwatch.gov.au" target="_blank">Scamwatch</a>
+        <a href="https://asic.gov.au" target="_blank">ASIC Registers</a>
+      </div>
+    </div>
+    <hr class="footer-divider">
+    <div class="footer-legal">
+      <div class="footer-legal-box">
+        <strong>General Information &amp; General Advice Warning</strong>
+        <p>All content on Finfo is provided for general information and educational purposes only. It does not constitute personal financial advice and does not take into account your individual objectives, financial situation, or needs. Where content constitutes general financial advice, a General Advice Warning is displayed. Before making any financial decision, read the relevant Product Disclosure Statement and Target Market Determination, consider whether the information is appropriate for your circumstances, and where necessary, seek advice from a licensed financial adviser. Finfo is not an Australian Financial Services Licensee and is not authorised to provide personal financial advice.</p>
+      </div>
+      <div class="footer-legal-box">
+        <strong>No Endorsement — Verify Current Information</strong>
+        <p>Finfo does not endorse any financial product, service, institution, or adviser. Rates, thresholds, caps, and legislative references change regularly. Always verify current figures with the relevant authority — the ATO (ato.gov.au), ASIC (asic.gov.au), or your state revenue office — before relying on any figure cited. Links to external government resources are for convenience only.</p>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2025 Finfo. For informational purposes only.</span>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Use</a>
+          <a href="#">Disclaimer</a>
+          <a href="#">Accessibility</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ─ NAVIGATION ─────────────────────────────────── */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+  const pg = document.getElementById('page-' + id);
+  if (pg) { pg.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  const match = Array.from(document.querySelectorAll('.nav-link')).find(n =>
+    n.textContent.toLowerCase().includes(id === 'home' ? 'home' : id.substring(0,4))
+  );
+  if (match) match.classList.add('active');
+  if (document.getElementById('mobDrawer').classList.contains('open')) toggleMob();
+}
+function goHome() { showPage('home'); }
+
+function toggleMob() {
+  const d = document.getElementById('mobDrawer');
+  const i = document.getElementById('mobIcon');
+  d.classList.toggle('open');
+  i.innerHTML = d.classList.contains('open')
+    ? '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'
+    : '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>';
+}
+
+/* ─ SEARCH ──────────────────────────────────────── */
+const searchMap = {
+  budget:    ['budget','saving','expense','spend','emergency fund','50/30/20','cashflow','cash flow','bnpl','afterpay'],
+  banking:   ['bank','account','savings','term deposit','offset','interest','fee','atm','compound','fcs','guarantee'],
+  debt:      ['debt','credit card','loan','credit score','borrow','hecs','help','repayment','avalanche','snowball'],
+  property:  ['property','mortgage','home','house','stamp duty','lmi','lvr','first home','fhbg','fhss','fhog','rent','negative gearing'],
+  investing: ['invest','share','etf','stock','crypto','bitcoin','compound','return','risk','managed fund','lic','asx','equities','bonds'],
+  super:     ['super','superannuation','retirement','smsf','salary sacrifice','concessional','preservation','pension','contribution'],
+  insurance: ['insurance','life','tpd','income protection','health','cover','trauma','contents','car','cci'],
+  safety:    ['scam','safe','fraud','adviser','complaint','afca','asic','licence','verify','pig butchering']
+};
+function doSearch(inputId) {
+  const q = (document.getElementById(inputId).value || '').toLowerCase().trim();
+  if (!q) return;
+  let best = null, bestScore = 0;
+  for (const [page, terms] of Object.entries(searchMap)) {
+    const score = terms.filter(t => q.includes(t) || t.includes(q)).length;
+    if (score > bestScore) { bestScore = score; best = page; }
+  }
+  if (best) showPage(best);
+}
+
+/* ─ ACCORDION ───────────────────────────────────── */
+function toggleAcc(btn) {
+  const body = btn.nextElementSibling;
+  const open = btn.classList.contains('open');
+  btn.classList.toggle('open', !open);
+  body.classList.toggle('open', !open);
+}
+
+/* ─ TABS ─────────────────────────────────────────── */
+function switchTab(containerId, tabId, btn) {
+  const c = document.getElementById(containerId);
+  c.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  const target = document.getElementById('tab-' + tabId);
+  if (target) target.classList.add('active');
+  if (btn) {
+    const bar = btn.closest('.tab-bar');
+    if (bar) bar.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+}
+
+/* ─ CAROUSEL ─────────────────────────────────────── */
+function scrollCarousel(dir) {
+  const track = document.getElementById('calcCarousel');
+  track.scrollBy({ left: dir * 360, behavior: 'smooth' });
+}
+
+/* ─ CAROUSEL CALCULATORS ─────────────────────────── */
+function fmt(n) { return '$' + Math.round(Math.abs(n)).toLocaleString('en-AU'); }
+function fmtK(n) { return '$' + Math.round(Math.abs(n) / 1000) + 'K'; }
+
+function calcCards() {
+  // Mortgage
+  const P = +document.getElementById('cc-loan').value;
+  const r = (+document.getElementById('cc-rate').value / 100) / 12;
+  const n = +document.getElementById('cc-term').value * 12;
+  document.getElementById('cc-loan-val').textContent = fmtK(P);
+  document.getElementById('cc-rate-val').textContent = (+document.getElementById('cc-rate').value).toFixed(1) + '%';
+  document.getElementById('cc-term-val').textContent = document.getElementById('cc-term').value + ' yrs';
+  const m = r === 0 ? P/n : P * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
+  document.getElementById('cc-mortgage-result').textContent = fmt(m) + '/mo';
+  document.getElementById('cc-mortgage-sub').textContent = 'Total interest: ' + fmtK(m*n-P);
+
+  // Savings goal
+  const goal = +document.getElementById('cc-goal').value;
+  const save = +document.getElementById('cc-save').value;
+  const sint = (+document.getElementById('cc-sint').value / 100) / 12;
+  document.getElementById('cc-goal-val').textContent = fmtK(goal);
+  document.getElementById('cc-save-val').textContent = fmt(save) + '/mo';
+  document.getElementById('cc-sint-val').textContent = (+document.getElementById('cc-sint').value).toFixed(1) + '%';
+  let balance = 0, months = 0, intEarned = 0;
+  while (balance < goal && months < 600) {
+    balance += save;
+    const i = balance * sint; balance += i; intEarned += i; months++;
+  }
+  const yrs = Math.floor(months/12), mos = months % 12;
+  document.getElementById('cc-goal-result').textContent = months >= 600 ? '>50 yrs' : (yrs > 0 ? yrs + 'y ' : '') + mos + 'm';
+  document.getElementById('cc-goal-sub').textContent = 'Interest earned: ' + fmt(intEarned);
+
+  // Compound
+  const cs = +document.getElementById('cc-cstart').value;
+  const cr = +document.getElementById('cc-crate').value / 100;
+  const cy = +document.getElementById('cc-cyears').value;
+  document.getElementById('cc-cstart-val').textContent = fmtK(cs);
+  document.getElementById('cc-crate-val').textContent = cr*100 + '%';
+  document.getElementById('cc-cyears-val').textContent = cy + ' yrs';
+  const fv = cs * Math.pow(1 + cr, cy);
+  document.getElementById('cc-compound-result').textContent = fmt(fv);
+  document.getElementById('cc-compound-sub').textContent = 'Gain: ' + fmt(fv-cs) + ' · ' + (fv/cs).toFixed(2) + '× your money';
+
+  // Debt payoff
+  const db = +document.getElementById('cc-dbal').value;
+  const dr = (+document.getElementById('cc-drate').value / 100) / 12;
+  const drep = +document.getElementById('cc-drep').value;
+  document.getElementById('cc-dbal-val').textContent = fmtK(db);
+  document.getElementById('cc-drate-val').textContent = (+document.getElementById('cc-drate').value).toFixed(1) + '%';
+  document.getElementById('cc-drep-val').textContent = fmt(drep) + '/mo';
+  if (drep <= db * dr) {
+    document.getElementById('cc-debt-result').textContent = 'Never'; 
+    document.getElementById('cc-debt-sub').textContent = 'Repayment too low to cover interest';
+  } else {
+    let bal = db, dMonths = 0, dInt = 0;
+    while (bal > 0 && dMonths < 600) {
+      const i = bal * dr; dInt += i; bal = bal + i - drep; if (bal < 0) bal = 0; dMonths++;
+    }
+    const dy = Math.floor(dMonths/12), dm = dMonths%12;
+    document.getElementById('cc-debt-result').textContent = (dy > 0 ? dy+'y ' : '') + dm + 'm';
+    document.getElementById('cc-debt-sub').textContent = 'Total interest: ' + fmt(dInt);
+  }
+}
+
+/* ─ BUDGET TOOL ─────────────────────────────────── */
+let budgetPeriod = 'weekly';
+const periodMult = { weekly:52, fortnightly:26, monthly:12, annual:1 };
+const periodSuffix = { weekly:'/wk', fortnightly:'/fn', monthly:'/mo', annual:'/yr' };
+
+function setPeriod(p, btn) {
+  budgetPeriod = p;
+  document.querySelectorAll('.per-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  calcBudget();
+}
+
+function gv(id) { return parseFloat(document.getElementById(id)?.value) || 0; }
+
+function calcBudget() {
+  const mult = periodMult[budgetPeriod];
+  const sfx  = periodSuffix[budgetPeriod];
+  const totalInc = [1,2,3,4,5].reduce((a,i) => a + gv('i'+i), 0) * mult;
+  const expVals  = [1,2,3,4,5,6,7,8,9,10,11,12].map(i => gv('e'+i) * mult);
+  const totalExp = expVals.reduce((a,b) => a+b, 0);
+  const surplus  = totalInc - totalExp;
+  const pct      = totalInc > 0 ? Math.min((totalExp / totalInc) * 100, 100) : 0;
+
+  const fmtP = (v) => fmt(v / mult) + sfx;
+  document.getElementById('bt-inc-total').textContent = fmtP(totalInc);
+  document.getElementById('bt-exp-total').textContent = fmtP(totalExp);
+  document.getElementById('bt-s-inc').textContent     = fmtP(totalInc);
+  document.getElementById('bt-s-exp').textContent     = fmtP(totalExp);
+  document.getElementById('bt-s-surp').textContent    = (surplus < 0 ? '-' : '') + fmtP(Math.abs(surplus));
+
+  const surpItem = document.getElementById('bt-s-surp-item');
+  surpItem.className = 'bt-sum-item ' + (surplus >= 0 ? 'surplus' : 'deficit');
+
+  const fill = document.getElementById('bt-bar-fill');
+  fill.style.width = pct + '%';
+  fill.className = 'bt-bar-fill' + (pct >= 100 ? ' over' : '');
+  document.getElementById('bt-pct-label').textContent = Math.round(pct) + '%';
+
+  const tip = document.getElementById('bt-tip');
+  if (totalInc > 0) {
+    tip.classList.add('show');
+    const sr = Math.round((surplus / totalInc) * 100);
+    const title = document.getElementById('bt-tip-title');
+    const text  = document.getElementById('bt-tip-text');
+    if (surplus > 0) {
+      title.textContent = `Savings rate: ${sr}%`;
+      text.textContent = sr >= 20
+        ? `You're directing ${sr}% of income toward surplus — above the commonly referenced 20% savings guideline. Consider allocating this to an emergency fund, investments, or extra debt repayments.`
+        : sr >= 10 ? `A ${sr}% savings rate is a solid foundation. The commonly referenced goal is 20% toward savings and debt repayment. Even small increases compound meaningfully over time.`
+        : `Your savings rate is ${sr}%. Reviewing your largest expense categories to find one area to reduce can meaningfully improve this position over time.`;
+    } else if (surplus < 0) {
+      title.textContent = 'Spending exceeds income';
+      text.textContent = `Expenses exceed income by ${fmtP(Math.abs(surplus))}. Reviewing your largest expense categories, and considering the National Debt Helpline (1800 007 007) for free guidance, may help.`;
+    } else {
+      title.textContent = 'Breaking even';
+      text.textContent = 'Income and expenses are balanced. Building even a small buffer — particularly toward an emergency fund — provides resilience against unexpected costs.';
+    }
+  } else {
+    tip.classList.remove('show');
+  }
+}
+
+/* ─ MORTGAGE CALC (property page) ───────────────── */
+function calcMortgage() {
+  const P = +document.getElementById('mw-loan').value;
+  const annual = +document.getElementById('mw-rate').value;
+  const years  = +document.getElementById('mw-term').value;
+  document.getElementById('mw-loan-v').textContent = fmtK(P);
+  document.getElementById('mw-rate-v').textContent = annual.toFixed(1) + '%';
+  document.getElementById('mw-term-v').textContent = years + ' year' + (years !== 1 ? 's' : '');
+  const r = (annual / 100) / 12, n = years * 12;
+  const m = r === 0 ? P/n : P * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
+  const total = m * n;
+  document.getElementById('mw-monthly').textContent  = fmt(m);
+  document.getElementById('mw-sub').textContent      = 'P&I over ' + years + ' years';
+  document.getElementById('mw-total').textContent    = fmtK(total);
+  document.getElementById('mw-interest').textContent = fmtK(total - P);
+}
+
+/* ─ NEWSLETTER ───────────────────────────────────── */
+function handleSubscribe(e) {
+  e.preventDefault();
+  const form = e.target;
+  const data = new FormData(form);
+  fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams(data).toString()
+  })
+  .then(() => {
+    form.querySelector('.nl-form-row').style.display = 'none';
+    form.querySelector('.nl-disclaimer').style.display = 'none';
+    document.getElementById('nl-success').style.display = 'block';
+  })
+  .catch(() => {
+    alert('Something went wrong — please try again.');
+  });
+}
+
+
+/* ─ REFERRAL MODAL ───────────────────────────────── */
+function getModal()   { return document.getElementById('referralModal'); }
+function getForm()    { return document.getElementById('modalFormState'); }
+function getSuccess() { return document.getElementById('modalSuccess'); }
+
+function openModal(type, icon, iconClass, eyebrow) {
+  document.getElementById('referralType').value = type;
+  document.getElementById('modalIcon').textContent = icon;
+  document.getElementById('modalIcon').className = 'modal-header-icon ' + iconClass;
+  document.getElementById('modalEyebrow').textContent = eyebrow;
+  document.getElementById('modalTitle').textContent = type;
+  getForm().style.display = '';
+  getSuccess().style.display = 'none';
+  document.getElementById('referralForm').reset();
+  document.getElementById('referralType').value = type;
+  getModal().classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => {
+    const first = document.getElementById('rf-fname');
+    if (first) first.focus();
+  }, 150);
+}
+
+function closeModal() {
+  getModal().classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleBackdropClick(e) {
+  if (e.target === getModal()) closeModal();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && getModal().classList.contains('open')) closeModal();
+});
+
+function handleReferralSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const btn  = document.getElementById('modalSubmitBtn');
+  const label = document.getElementById('modalSubmitLabel');
+
+  // Basic validation
+  const required = form.querySelectorAll('[required]');
+  let valid = true;
+  required.forEach(el => {
+    el.style.borderColor = '';
+    if (!el.value.trim()) {
+      el.style.borderColor = '#C0392B';
+      valid = false;
+    }
+  });
+  if (!valid) {
+    const first = form.querySelector('[required]:invalid, [style*="C0392B"]');
+    if (first) first.focus();
+    return;
+  }
+
+  btn.disabled = true;
+  label.textContent = 'Submitting…';
+
+  const data = new FormData(form);
+  fetch('/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams(data).toString()
+  })
+  .then(() => {
+    getForm().style.display = 'none';
+    getSuccess().style.display = 'block';
+  })
+  .catch(() => {
+    btn.disabled = false;
+    label.textContent = 'Submit enquiry';
+    alert('Something went wrong — please try again or email us directly.');
+  });
+}
+
+
+/* ─ INIT ─────────────────────────────────────────── */
+calcCards();
+calcMortgage();
+calcBudget();
+</script>
+
+<!-- ═══════════════════════════════════════════ REFERRAL MODAL -->
+<div class="modal-backdrop" id="referralModal" onclick="handleBackdropClick(event)">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+    <!-- FORM STATE -->
+    <div id="modalFormState">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="modal-header-icon bg-green" id="modalIcon">💬</div>
+          <div>
+            <span class="modal-eyebrow" id="modalEyebrow">Referral enquiry</span>
+            <div class="modal-title" id="modalTitle">Get in touch</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-disclaimer">
+          <p>📋 <strong>Referral disclosure:</strong> Finfo may receive a referral fee if you proceed with a product or service through this introduction. This does not affect the general information on this site. You are under no obligation to proceed.</p>
+        </div>
+
+        <form
+          id="referralForm"
+          name="finfo-referrals"
+          method="POST"
+          data-netlify="true"
+          netlify-honeypot="bot-field"
+          onsubmit="handleReferralSubmit(event)"
+        >
+          <input type="hidden" name="form-name" value="finfo-referrals">
+          <input type="hidden" name="referral-type" id="referralType" value="">
+          <p style="display:none;"><input name="bot-field"></p>
+
+          <div class="form-row-2">
+            <div>
+              <label class="form-label" for="rf-fname">First name <span class="form-required">*</span></label>
+              <input class="form-input" type="text" id="rf-fname" name="first-name" placeholder="Alex" required autocomplete="given-name">
+            </div>
+            <div>
+              <label class="form-label" for="rf-lname">Last name <span class="form-required">*</span></label>
+              <input class="form-input" type="text" id="rf-lname" name="last-name" placeholder="Smith" required autocomplete="family-name">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label" for="rf-email">Email address <span class="form-required">*</span></label>
+            <input class="form-input" type="email" id="rf-email" name="email" placeholder="alex@example.com" required autocomplete="email">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label" for="rf-phone">Phone number <span class="form-required">*</span></label>
+            <input class="form-input" type="tel" id="rf-phone" name="phone" placeholder="04XX XXX XXX" required autocomplete="tel">
+          </div>
+
+          <div class="form-row-2">
+            <div>
+              <label class="form-label" for="rf-state">State <span class="form-required">*</span></label>
+              <select class="form-input" id="rf-state" name="state" required>
+                <option value="" disabled selected>Select state</option>
+                <option>NSW</option><option>VIC</option><option>QLD</option>
+                <option>WA</option><option>SA</option><option>TAS</option>
+                <option>ACT</option><option>NT</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="rf-timing">Timeframe</label>
+              <select class="form-input" id="rf-timing" name="timeframe">
+                <option value="" disabled selected>When are you looking?</option>
+                <option>As soon as possible</option>
+                <option>Within 1–3 months</option>
+                <option>Within 3–6 months</option>
+                <option>Just researching for now</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label" for="rf-message">Anything else we should know? <span style="font-weight:400;color:var(--text-muted);">(optional)</span></label>
+            <textarea class="form-input" id="rf-message" name="message" placeholder="e.g. loan amount, existing lender, specific questions…"></textarea>
+            <p class="form-hint">The more context you share, the better we can match you with the right specialist.</p>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button class="modal-submit" id="modalSubmitBtn" onclick="document.getElementById('referralForm').requestSubmit()">
+          <span id="modalSubmitLabel">Submit enquiry</span>
+        </button>
+        <p class="modal-fine-print">
+          By submitting you agree to our <a href="#">Privacy Policy</a>. Your details will be shared only with the relevant Finfo referral partner for the purpose of this enquiry. You can opt out at any time.
+        </p>
+      </div>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div class="modal-success" id="modalSuccess">
+      <div class="modal-success-icon">✅</div>
+      <h3>Enquiry received!</h3>
+      <p>Thanks for getting in touch. A qualified specialist from the Finfo network will be in contact with you within one business day.</p>
+      <button class="modal-success-close" onclick="closeModal()">Close</button>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
