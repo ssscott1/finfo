@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
+  console.log('[webhook] payload:', JSON.stringify(body));
   const data = (body.data as Record<string, string>) ?? {};
   const formName = ((body.form_name as string) ?? '').toLowerCase();
 
