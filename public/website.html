@@ -3,7 +3,143 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Finfo — Financial information, not advice</title>
+<title>Finfo — Free Financial Information for Australians | Not Advice</title>
+<meta name="description" content="Free, plain-English guides and calculators covering budgeting, mortgages, investing, superannuation, insurance and tax. Built for everyday Australians. General information only — not personal financial advice.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://www.finfo.com.au/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.finfo.com.au/">
+<meta property="og:site_name" content="Finfo">
+<meta property="og:title" content="Finfo — Free Financial Information for Australians">
+<meta property="og:description" content="Plain-English guides and free calculators covering budgeting, mortgages, investing, super, insurance and tax. For everyday Australians — not financial advice.">
+<meta property="og:locale" content="en_AU">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Finfo — Free Financial Information for Australians">
+<meta name="twitter:description" content="Plain-English financial guides and calculators. Budgeting, mortgages, investing, super and more. Free for all Australians.">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.finfo.com.au/#organization",
+      "name": "Finfo",
+      "url": "https://www.finfo.com.au",
+      "description": "Finfo provides free, plain-English financial information and educational resources for everyday Australians. Finfo is not a financial adviser and does not provide personal financial advice. All content is general information only, aligned with ASIC and ATO guidelines.",
+      "areaServed": "AU",
+      "knowsAbout": [
+        "Personal budgeting",
+        "Home loans and mortgages",
+        "Personal loans",
+        "Car loans",
+        "Investing and ETFs",
+        "Superannuation",
+        "Self-managed super funds (SMSF)",
+        "Insurance",
+        "Tax in Australia",
+        "Debt management",
+        "Financial literacy"
+      ],
+      "slogan": "Financial information, not advice"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.finfo.com.au/#website",
+      "url": "https://www.finfo.com.au",
+      "name": "Finfo",
+      "description": "Free financial information for everyday Australians",
+      "publisher": { "@id": "https://www.finfo.com.au/#organization" },
+      "inLanguage": "en-AU"
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://www.finfo.com.au/#webpage",
+      "url": "https://www.finfo.com.au",
+      "name": "Finfo — Free Financial Information for Australians",
+      "description": "Free, plain-English guides and calculators covering budgeting, mortgages, investing, superannuation, insurance and tax for everyday Australians.",
+      "isPartOf": { "@id": "https://www.finfo.com.au/#website" },
+      "about": { "@id": "https://www.finfo.com.au/#organization" },
+      "inLanguage": "en-AU"
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://www.finfo.com.au/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Finfo?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Finfo is a free Australian website providing plain-English financial information and educational resources. It covers topics including budgeting, home loans, investing, superannuation, insurance and tax. Finfo is not a financial adviser and does not provide personal financial advice — all content is general information only."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Finfo financial advice?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. All content on Finfo is general information and educational material only. It does not constitute personal financial advice and does not take into account your individual objectives, financial situation or needs. Finfo is not an Australian Financial Services Licensee. Before making any financial decision, consider seeking advice from a licensed financial adviser."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I budget on an irregular income?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Base your budget on your lowest realistic monthly income and treat extra earnings as a bonus to direct toward savings or debt. Keep a larger cash buffer — often 2–3 months of expenses — to smooth lean periods. Some people pay themselves a fixed weekly salary by depositing all income into one account and transferring a set amount for regular expenses."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between a savings account and an offset account?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A savings account pays interest on your balance. An offset account is linked to a home loan — the balance reduces the portion of the loan that attracts interest. For example, a $400,000 loan with $20,000 in an offset means interest is only charged on $380,000. The effective return equals your home loan interest rate, which is typically higher than savings rates and is not subject to income tax on the interest saved."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is LMI and how can I avoid it?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Lenders Mortgage Insurance (LMI) is a one-off premium charged by lenders when a borrower has less than a 20% deposit on a home loan. LMI protects the lender — not the borrower — if the loan defaults. You can avoid LMI by saving a 20% deposit, using a guarantor loan, or qualifying for a government scheme such as the First Home Guarantee, which allows eligible first home buyers to purchase with as little as a 5% deposit without paying LMI."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does salary sacrificing into super work in Australia?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Salary sacrificing into superannuation means directing a portion of your pre-tax salary into your super fund instead of receiving it as take-home pay. These contributions are taxed at 15% inside the fund rather than at your marginal income tax rate, which for most Australians results in a tax saving. The annual concessional contributions cap is $30,000 (2024–25), which includes your employer's compulsory Super Guarantee contributions."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between ETFs and managed funds?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "ETFs (Exchange Traded Funds) are investment funds that trade on the ASX like shares, typically tracking an index passively with low management fees. Managed funds are not exchange-listed and are bought directly from the fund manager, often with active management and higher fees. Both pool investor money to provide diversified exposure. ETFs generally offer lower costs, intraday liquidity and greater transparency, while some managed funds aim to outperform the market through active stock selection."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What Australian government schemes help first home buyers?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Key Australian government schemes for first home buyers include: the First Home Guarantee (5% deposit, no LMI, for eligible buyers purchasing their first home); the First Home Super Saver Scheme (FHSSS, save up to $50,000 in super for a first home deposit with tax advantages); and state-based stamp duty concessions or exemptions. Eligibility criteria, income caps and property price limits vary by scheme and state. See Housing Australia and your state revenue office for current details."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">

@@ -3,19 +3,25 @@ import { createServiceClient } from '@/lib/supabase/server';
 import { randomUUID } from 'crypto';
 
 const REFERRAL_TYPE_TO_PRODUCT: Record<string, string> = {
-  'car loan':                   'Car Loan',
-  'car, boat & personal loans': 'Car Loan',
-  'boat loan':                  'Boat Loan',
-  'personal loan':              'Personal Loan',
-  'home loan':                  'Mortgage',
-  'home loan referral':         'Mortgage',
-  'mortgage':                   'Mortgage',
-  'accountant':                 'Accountant',
-  'financial adviser':          'Financial Adviser',
-  'financial advisor':          'Financial Adviser',
-  'smsf setup':                 'SMSF Setup',
-  'smsf':                       'SMSF Setup',
-  'insurance':                  'Insurance',
+  // Exact values set by finfo.com.au openModal() calls
+  'car, boat & personal loans':          'Car Loan',
+  'home loan referral':                  'Mortgage',
+  'accountant & adviser — investing':    'Financial Adviser',
+  'accountant & financial adviser':      'Financial Adviser',
+  'smsf & tax specialist':               'SMSF Setup',
+  'insurance specialist referral':       'Insurance',
+  // Fallbacks for other sources
+  'car loan':                            'Car Loan',
+  'boat loan':                           'Boat Loan',
+  'personal loan':                       'Personal Loan',
+  'home loan':                           'Mortgage',
+  'mortgage':                            'Mortgage',
+  'accountant':                          'Accountant',
+  'financial adviser':                   'Financial Adviser',
+  'financial advisor':                   'Financial Adviser',
+  'smsf setup':                          'SMSF Setup',
+  'smsf':                                'SMSF Setup',
+  'insurance':                           'Insurance',
 };
 
 const FORM_NAME_TO_PRODUCT: Record<string, string> = {
